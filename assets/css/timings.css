@@ -1,0 +1,28 @@
+.table-section {
+    padding: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background: #0b3d2e;
+    color: white;
+}
+
+.today {
+    background: #e6f4ef;
+    font-weight: bold;
+}

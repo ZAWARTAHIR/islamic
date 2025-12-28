@@ -1,0 +1,125 @@
+/* Scoped lunar theme — applied only when <body> has class `lunar-enabled` */
+.lunar-enabled {
+  font-family: 'Roboto', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  transition: background 0.5s;
+  overflow: auto;
+}
+.lunar-enabled .container {
+  background: rgba(40,44,52,0.92);
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  max-width: 960px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  transition: background 0.5s, box-shadow 0.5s;
+  margin: 40px auto;
+  box-sizing: border-box;
+}
+.lunar-enabled h1 { font-size: 2rem; margin-bottom: 1.5rem; font-weight: 700; letter-spacing: 1px; text-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: color 0.5s; }
+.lunar-enabled label { display: block; margin-bottom: 0.5rem; font-size: 1rem; }
+.lunar-enabled select { width: 100%; padding: 0.5rem 0.8rem; margin-bottom: 1.2rem; border-radius: 10px; border: none; background: #23272f; color: #fff; font-size: 1.08rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); appearance: none; -webkit-appearance: none; transition: background 0.5s, color 0.5s; outline: none; cursor: pointer; position: relative; }
+.lunar-enabled select:focus { box-shadow: 0 0 0 2px #61dafb; }
+.lunar-enabled .select-wrapper { position: relative; margin-bottom: 1.2rem; }
+.lunar-enabled .select-wrapper::after { content: ''; position: absolute; right: 18px; top: 50%; width: 12px; height: 12px; pointer-events: none; background: url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat center center/contain; transform: translateY(-50%); transition: filter 0.5s; }
+.lunar-enabled .info { margin-bottom: 1.2rem; font-size: 1.08rem; background: #23272f; padding: 0.7rem 1rem; border-radius: 10px; word-break: break-all; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.5s, color 0.5s; }
+.lunar-enabled .note { font-size: 0.97rem; color: #aaa; margin-top: 1.2rem; text-align: center; transition: color 0.5s; }
+.lunar-enabled .theme-switch { display: flex; align-items: center; justify-content: flex-end; margin-bottom: 1.2rem; gap: 0.7rem; }
+.lunar-enabled .theme-toggle { width: 44px; height: 24px; border-radius: 12px; background: #444; position: relative; cursor: pointer; transition: background 0.5s; border: 2px solid #333; display: flex; align-items: center; padding: 2px; }
+.lunar-enabled .theme-toggle .toggle-ball { width: 20px; height: 20px; border-radius: 50%; background: #fff; position: absolute; left: 2px; top: 2px; transition: left 0.4s, background 0.5s; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+.lunar-enabled .theme-toggle.light .toggle-ball { left: 22px; background: #ffe066; box-shadow: 0 2px 8px #ffe06644; }
+.lunar-enabled .theme-toggle.light { background: #ffe066; border-color: #ffe066; }
+.lunar-enabled .theme-toggle .icon { position: absolute; width: 16px; height: 16px; top: 4px; left: 6px; pointer-events: none; opacity: 0.7; transition: opacity 0.5s; }
+.lunar-enabled .theme-toggle.light .icon { left: 24px; opacity: 1; }
+/* Animated background for dark theme */
+.lunar-enabled .moon { position: fixed; border-radius: 50%; background: none; box-shadow: none; z-index: 1; pointer-events: none; transition: left 0.2s ease, top 0.2s ease, width 0.5s, height 0.5s, background 0.5s, box-shadow 0.5s, z-index 0.5s, opacity 0.5s; animation: moon-move 6s infinite alternate ease-in-out; display: block !important; }
+.lunar-enabled.dark .moon { display: block; width: 120px; height: 120px; }
+.lunar-enabled .moon-svg-phase { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 24px #bfcfffcc); transition: filter 0.5s; }
+.lunar-enabled .sun { position: fixed; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle at 60% 40%, #fffbe4 40%, #ffe066 70%, #ffd700 100%); box-shadow: 0 0 80px 30px #ffd70055, 0 0 0 8px #fffde455; z-index: 0; pointer-events: none; transition: left 0.5s, top 0.5s, background 0.5s, box-shadow 0.5s; animation: sun-move 6s infinite alternate ease-in-out; display: none; overflow: visible; }
+.lunar-enabled.light .sun { display: none; }
+@keyframes moon-move { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(-20px) scale(1.05); } }
+@keyframes sun-move { 0% { transform: scale(1) rotate(0deg); } 100% { transform: scale(1.05) rotate(10deg); } }
+.lunar-enabled .sun-rays { position: absolute; left: 50%; top: 50%; width: 140px; height: 140px; transform: translate(-50%, -50%); pointer-events: none; z-index: -1; display: block; }
+.lunar-enabled .sun-ray { position: absolute; width: 8px; height: 40px; background: linear-gradient(to bottom, #ffd700 80%, transparent 100%); left: 50%; top: 50%; transform-origin: bottom center; border-radius: 4px; opacity: 0.7; animation: ray-anim 2s infinite alternate; filter: blur(0.5px); }
+@keyframes ray-anim { 0% { opacity: 0.7; } 100% { opacity: 1; } }
+@media (max-width: 500px) { .lunar-enabled .container { padding: 1rem 0.5rem; } }
+/* Light theme overrides (scoped) */
+.lunar-enabled.light { background: linear-gradient(120deg, #e3e8f0 0%, #cfd8e6 100%); }
+.lunar-enabled.light .container { background: rgba(255,255,255,0.95); box-shadow: 0 8px 32px rgba(0,0,0,0.10); }
+.lunar-enabled.light h1 { color: #222; }
+.lunar-enabled.light .info { background: #f3f6fa; color: #222; }
+.lunar-enabled.light .note { color: #666; }
+.lunar-enabled.light select { background: #f3f6fa; color: #222; }
+.lunar-enabled.light .select-wrapper::after { filter: invert(1); }
+
+/* Dark theme overrides (scoped) */
+.lunar-enabled.dark { background: linear-gradient(120deg, #181c24 0%, #23273a 100%); color: #fff; }
+.lunar-enabled.dark h1 { color: #fff; }
+.lunar-enabled.dark .info { color: #fff; background: #23273a; }
+.lunar-enabled.dark .note { color: #e0e6ff; }
+.lunar-enabled.dark select { background: #23273a; color: #fff; }
+.lunar-enabled.dark .select-wrapper::after { filter: none; }
+select::-webkit-input-placeholder { color: #bbb; }
+select::-webkit-selection { background: #ffe066; color: #222; }
+.lunar-enabled .moon-phase-icon { display: inline-block; vertical-align: middle; width: 38px; height: 38px; margin-right: 0.5em; transition: filter 0.5s; }
+.lunar-enabled .moon-phase-svg { width: 100%; height: 100%; display: block; }
+.lunar-enabled .star { position: fixed; border-radius: 50%; background: #ffe066; opacity: 0.8; pointer-events: none; z-index: 0; animation: twinkle 2s infinite alternate; will-change: opacity, transform; box-shadow: 0 0 16px 4px #ffe06699; }
+@keyframes twinkle { from { opacity: 0.7; } to { opacity: 1; } }
+.lunar-enabled .star-dark { position: fixed; border-radius: 50%; background: #bfcfff; opacity: 0.8; pointer-events: none; z-index: 0; animation: twinkle 2s infinite alternate; will-change: opacity, transform; box-shadow: 0 0 8px 2px #bfcfff99; }
+.lunar-enabled.light .moon { display: block; width: 120px; height: 120px; }
+.lunar-enabled.light .moon-svg-phase { filter: drop-shadow(0 0 16px #ffe066cc); }
+#loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: transparent; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.4s; opacity: 1; pointer-events: all; }
+#loading-overlay.hide { opacity: 0; pointer-events: none; }
+.dot-loader { display: flex; gap: 0.5em; align-items: center; justify-content: center; }
+.dot-loader span { width: 12px; height: 12px; border-radius: 50%; background: var(--loader-dot, #ffe066); display: inline-block; animation: dotPulse 0.9s infinite cubic-bezier(.6,.2,.4,1); }
+.dot-loader span:nth-child(2) { animation-delay: 0.15s; }
+.dot-loader span:nth-child(3) { animation-delay: 0.3s; }
+.lunar-enabled.light .dot-loader span { --loader-dot: #ffe066; }
+.lunar-enabled.dark .dot-loader span { --loader-dot: #bfcfff; }
+@keyframes dotPulse { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1.2); } }
+.lunar-enabled .prayer-times { margin-bottom: 1.2rem; background: #23272f; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.5s, color 0.5s; }
+.lunar-enabled .prayer-times h3 { margin: 0 0 0.8rem 0; font-size: 1.1rem; font-weight: 600; color: #fff; transition: color 0.5s; }
+.lunar-enabled .prayer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.lunar-enabled .prayer-item { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.05); border-radius: 6px; font-size: 0.9rem; transition: background 0.3s; }
+.lunar-enabled .prayer-item.current { background: rgba(255,224,102,0.2); border-left: 3px solid #ffe066; }
+.lunar-enabled .prayer-name { font-weight: 500; color: #fff; transition: color 0.5s; }
+.lunar-enabled .prayer-time { color: #ccc; font-family: monospace; transition: color 0.5s; }
+.lunar-enabled.light .prayer-times { background: #f3f6fa; }
+.lunar-enabled.light .prayer-times h3 { color: #222; }
+.lunar-enabled.light .prayer-item { background: rgba(0,0,0,0.05); }
+.lunar-enabled.light .prayer-item.current { background: rgba(255,224,102,0.3); border-left: 3px solid #ffe066; }
+.lunar-enabled.light .prayer-name { color: #222; }
+.lunar-enabled.light .prayer-time { color: #666; }
+.lunar-enabled .tab-container { margin-bottom: 1.2rem; }
+.lunar-enabled .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.lunar-enabled .tab-button { flex: 1; padding: 0.8rem 1rem; background: #23272f; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; transition: all 0.3s; }
+.lunar-enabled .tab-button.active { background: #ffe066; color: #222; }
+.lunar-enabled .tab-button:hover:not(.active) { background: #2a2f3a; }
+
+/* Navbar layout and theme toggle sizing when lunar theme is active */
+.lunar-enabled .navbar { position: relative; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; padding: 0.6rem 1rem; width: 100%; z-index: 1000; box-sizing: border-box; }
+.lunar-enabled.dark .navbar { background: rgba(35,39,58,0.95); color: #fff; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.lunar-enabled.light .navbar { background: rgba(243,246,250,0.98); color: #222; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.lunar-enabled .navbar a { color: inherit; text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 6px; }
+.lunar-enabled .navbar a:hover { background: rgba(255,255,255,0.04); }
+
+/* Navbar split layout */
+.lunar-enabled .navbar .nav-left { display: flex; gap: 0.5rem; align-items: center; }
+.lunar-enabled .navbar .nav-right { margin-left: 0; display: flex; gap: 0.5rem; align-items: center; }
+.lunar-enabled .navbar .navbar-toggle { display: flex; align-items: center; gap: 0.5rem; }
+.lunar-enabled .navbar .theme-switch.navbar-toggle { position: static; padding: 0; }
+.lunar-enabled .theme-switch { display: flex; align-items: center; gap: 0.5rem; }
+.lunar-enabled .theme-toggle { width: 40px; height: 22px; }
+.lunar-enabled .theme-toggle .toggle-ball { width: 18px; height: 18px; }
+.lunar-enabled .tab-content { display: none; }
+.lunar-enabled .tab-content.active { display: block; }
+.lunar-enabled.light .tab-button { background: #f3f6fa; color: #222; }
+lunar-global.css created.

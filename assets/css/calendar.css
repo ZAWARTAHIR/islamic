@@ -1,0 +1,23 @@
+.calendar-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.day-card {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.day-card h3 {
+    margin: 0;
+    color: #0b3d2e;
+}
+
+.day-card p {
+    margin: 6px 0;
+    font-size: 14px;
+}

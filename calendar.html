@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ramzan Calendar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/theme.css">
+    <link rel="stylesheet" href="assets/css/lunar-global.css">
+    <link rel="stylesheet" href="assets/css/calendar.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-left">
+        <a href="index.html">Home</a>
+        <a href="calendar.html">Calendar</a>
+        <a href="timings.html">Timings</a>
+        <a href="duas.html">Duas</a>
+        <a href="zakat.html">Zakat</a>
+        <a href="lunar.html">Lunar</a>
+        <a href="about.html">About</a>
+    </div>
+    <div class="nav-right">
+        <a href="contact.html">Contact</a>
+        <div id="navbarThemePlaceholder"></div>
+    </div>
+</nav>
+
+<main class="container">
+    <header>
+        <div class="page-hero card"><img src="assets/images/calendar-hero.svg" alt="Calendar hero"></div>
+        <h1>Ramzan Calendar — Monthly View</h1>
+        <p class="lead">Printable calendar with daily Sehri and Iftar times.</p>
+    </header>
+
+    <section class="selectors">
+        <label>Country
+            <select id="countrySelect"><option value="">Loading...</option></select>
+        </label>
+        <label>City
+            <select id="citySelect"><option value="">Select Country</option></select>
+        </label>
+    </section>
+
+    <section id="calendarContainer" class="calendar-container card">
+        <!-- Calendar days will render here -->
+    </section>
+
+    <div class="actions">
+        <button id="printCalendar">Print Calendar</button>
+    </div>
+    
+    <section class="card-grid">
+        <article class="info-card">
+            <h3>Calculation Notes</h3>
+            <p>Timings may be based on local astronomical calculations (Fajr/Sunset angles) or mosque schedules; verify with local authority.</p>
+        </article>
+        <article class="info-card">
+            <h3>Printable Tips</h3>
+            <p>Use the Print button for a clean calendar layout; set page size to A4 and landscape for best results.</p>
+        </article>
+        <article class="info-card">
+            <h3>Hijri Conversion</h3>
+            <p>This calendar uses precomputed Hijri-Gregorian mapping; visual moon sightings may differ locally.</p>
+        </article>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="timings.html">Timings</a>
+            <a href="duas.html">Duas</a>
+            <a href="zakat.html">Zakat</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-meta">
+            <div class="social"><a href="#">Twitter</a><a href="#">Facebook</a><a href="#">Instagram</a></div>
+            <div style="margin-top:6px"><a href="seo/sitemap.xml">Sitemap</a> · <a href="seo/robots.txt">Robots</a> · <a href="privacy.html">Privacy</a></div>
+            <div style="margin-top:8px">© 2026 Ramzan Calendar</div>
+        </div>
+    </div>
+</footer>
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/country-city.js"></script>
+<script src="assets/js/calendar.js"></script>
+<script src="assets/js/lunar.js"></script>
+<script>
+document.getElementById('printCalendar').addEventListener('click', ()=>window.print());
+</script>
+
+</body>
+</html>

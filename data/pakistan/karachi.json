@@ -1,0 +1,19 @@
+{
+  "country": "Pakistan",
+  "city": "Karachi",
+  "year": 2026,
+  "ramzan": [
+    {
+      "day": 1,
+      "date": "2026-02-18",
+      "sehri": "05:21",
+      "iftar": "18:12"
+    },
+    {
+      "day": 2,
+      "date": "2026-02-19",
+      "sehri": "05:20",
+      "iftar": "18:13"
+    }
+  ]
+}

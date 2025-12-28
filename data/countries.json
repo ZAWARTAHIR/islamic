@@ -1,0 +1,12 @@
+[
+  {
+    "id": "pakistan",
+    "name": "Pakistan",
+    "timezone": "Asia/Karachi"
+  },
+  {
+    "id": "saudi-arabia",
+    "name": "Saudi Arabia",
+    "timezone": "Asia/Riyadh"
+  }
+]

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
+  <rect width="800" height="300" fill="#08391f" />
+  <g transform="translate(60,40)" fill="#f8e6b2">
+    <rect x="40" y="80" width="320" height="120" rx="12" />
+    <path d="M420 110l120-60v140l-120-60z" />
+  </g>
+  <text x="40" y="260" fill="#f8e6b2" font-size="20">Contact & Feedback</text>
+</svg>

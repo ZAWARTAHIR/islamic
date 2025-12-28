@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lunar Islamic Calendar</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
+  <link rel="stylesheet" href="assets/css/lunar-global.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <a href="index.html">Home</a>
+      <a href="calendar.html">Calendar</a>
+      <a href="timings.html">Timings</a>
+      <a href="duas.html">Duas</a>
+      <a href="zakat.html">Zakat</a>
+      <a href="lunar.html">Lunar</a>
+      <a href="about.html">About</a>
+    </div>
+    <div class="nav-right">
+      <a href="contact.html">Contact</a>
+      <div id="navbarThemePlaceholder"></div>
+    </div>
+  </nav>
+
+  <div id="loading-overlay"><div class="dot-loader"><span></span><span></span><span></span></div></div>
+  <div class="container" id="lunar-container">
+    <div class="theme-switch">
+      <span style="font-size:1.2em;">🌙</span>
+      <div class="theme-toggle" id="themeToggle">
+        <div class="toggle-ball"></div>
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#ffe066"/></svg>
+      </div>
+      <span style="font-size:1.2em;">🌟</span>
+    </div>
+    <h1><span class="moon-phase-icon" id="moonPhaseIcon"></span>Lunar Islamic Calendar</h1>
+    <div class="select-wrapper">
+      <label>Time Zone:
+        <span style="display:inline-block;width:1.50em;"></span>
+        <select id="timezone"></select>
+      </label>
+    </div>
+    <div class="info" id="gregorian"></div>
+    <div class="info" id="sunset"></div>
+    <div class="info" id="islamic"></div>
+    <div class="prayer-times">
+      <h3>Prayer Times</h3>
+      <div class="prayer-grid" id="prayerGrid"></div>
+    </div>
+    <h2 class="education-heading">Education</h2>
+    <section class="education-content">
+      <div class="education-section">
+        <h3>The Islamic Lunar Calendar</h3>
+        <p>The Islamic calendar, also known as the Hijri calendar, is a lunar calendar consisting of 12 months in a year of 354 or 355 days. It is used to determine the proper days of Islamic holidays and rituals, such as the annual period of fasting and the proper time for the Hajj.</p>
+        <p>The calendar begins with the Hijra, the migration of the Prophet Muhammad (ﷺ) from Mecca to Medina in 622 CE. This event marks the beginning of the Islamic era.</p>
+      </div>
+      <div class="education-section">
+        <h3>Lunar Months</h3>
+        <p>Each month begins with the sighting of the new moon. The months alternate between 29 and 30 days, with the actual length depending on the lunar cycle. This creates a calendar that is approximately 11 days shorter than the solar year.</p>
+      </div>
+      <div class="education-section">
+        <h3>Qur'anic Verses About Time</h3>
+        <div class="quran-verse">
+          "Indeed, the number of months with Allah is twelve [lunar] months in the register of Allah [from] the day He created the heavens and the earth; of these, four are sacred."
+          <div class="quran-reference">— Surah At-Tawbah 9:36</div>
+        </div>
+        <div class="quran-verse">
+          "They ask you about the new moons. Say, 'They are measurements of time for the people and for Hajj.'"
+          <div class="quran-reference">— Surah Al-Baqarah 2:189</div>
+        </div>
+        <div class="quran-verse">
+          "And [it is] He who made the night and the day in succession for whoever desires to remember or desires gratitude."
+          <div class="quran-reference">— Surah Al-Furqan 25:62</div>
+        </div>
+      </div>
+    </section>
+    <div class="note">
+      Islamic day starts at local sunset. Every 3 years, the 13th month is deleted.<br>
+      <span style="font-size:0.9em;">(Timezone changes update instantly)</span>
+    </div>
+  </div>
+
+  <script src="assets/js/lunar.js"></script>
+</body>
+</html>

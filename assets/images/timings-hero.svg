@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
+  <rect width="800" height="300" fill="#08391f" />
+  <g transform="translate(60,40)" fill="#f8e6b2">
+    <circle cx="180" cy="100" r="70" />
+    <rect x="340" y="40" width="200" height="160" rx="12" />
+  </g>
+  <text x="40" y="260" fill="#f8e6b2" font-size="20">Sehri & Iftar Timings</text>
+</svg>

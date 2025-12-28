@@ -1,0 +1,19 @@
+{
+  "country": "Saudi Arabia",
+  "city": "Makkah",
+  "year": 2026,
+  "ramzan": [
+    {
+      "day": 1,
+      "date": "2026-02-18",
+      "sehri": "05:10",
+      "iftar": "18:35"
+    },
+    {
+      "day": 2",
+      "date": "2026-02-19",
+      "sehri": "05:09",
+      "iftar": "18:36"
+    }
+  ]
+}
