@@ -1,0 +1,15 @@
+{
+  "country": "Canada",
+  "cities": [
+    "Toronto",
+    "Montreal",
+    "Vancouver",
+    "Calgary",
+    "Edmonton",
+    "Ottawa",
+    "Winnipeg",
+    "Quebec City",
+    "Hamilton",
+    "Kitchener"
+  ]
+}

@@ -5,11 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lunar Islamic Calendar</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/theme.css">
   <link rel="stylesheet" href="assets/css/lunar-global.css">
 </head>
 <body>
   <nav class="navbar">
-    <div class="nav-left">
+    <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="hamburger" aria-hidden="true"></span>
+    </button>
+    <div class="nav-left" id="navLeft">
       <a href="index.html">Home</a>
       <a href="calendar.html">Calendar</a>
       <a href="timings.html">Timings</a>
@@ -17,23 +23,36 @@
       <a href="zakat.html">Zakat</a>
       <a href="lunar.html">Lunar</a>
       <a href="about.html">About</a>
+      <!-- mobile-only copy of right-aligned items so they appear inside hamburger menu -->
+      <div class="nav-left-mobile-copy mobile-only" aria-hidden="true">
+        <a href="contact.html">Contact</a>
+      </div>
     </div>
     <div class="nav-right">
-      <a href="contact.html">Contact</a>
+      <a href="contact.html" class="desktop-only">Contact</a>
       <div id="navbarThemePlaceholder"></div>
     </div>
   </nav>
 
   <div id="loading-overlay"><div class="dot-loader"><span></span><span></span><span></span></div></div>
+  <script>
+    // Ensure loading overlay is removed quickly so it doesn't block interaction
+    (function(){
+      function removeOverlay(){
+        try{
+          var o = document.getElementById('loading-overlay');
+          if(!o) return;
+          o.classList.add('hide');
+          o.style.pointerEvents = 'none';
+          setTimeout(function(){ if(o.parentNode) o.parentNode.removeChild(o); }, 450);
+        }catch(e){ /* ignore */ }
+      }
+      if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', removeOverlay); else removeOverlay();
+      // extra safety fallback
+      setTimeout(removeOverlay, 3000);
+    })();
+  </script>
   <div class="container" id="lunar-container">
-    <div class="theme-switch">
-      <span style="font-size:1.2em;">🌙</span>
-      <div class="theme-toggle" id="themeToggle">
-        <div class="toggle-ball"></div>
-        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="#ffe066"/></svg>
-      </div>
-      <span style="font-size:1.2em;">🌟</span>
-    </div>
     <h1><span class="moon-phase-icon" id="moonPhaseIcon"></span>Lunar Islamic Calendar</h1>
     <div class="select-wrapper">
       <label>Time Zone:
@@ -81,6 +100,7 @@
     </div>
   </div>
 
+  <script src="assets/js/main.js"></script>
   <script src="assets/js/lunar.js"></script>
 </body>
 </html>

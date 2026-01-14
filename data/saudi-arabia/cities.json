@@ -1,4 +1,15 @@
 {
   "country": "Saudi Arabia",
-  "cities": ["Makkah", "Madinah", "Riyadh"]
+  "cities": [
+    "Makkah",
+    "Madinah",
+    "Riyadh",
+    "Jeddah",
+    "Dammam",
+    "Taif",
+    "Tabuk",
+    "Buraidah",
+    "Khamis Mushait",
+    "Abha"
+  ]
 }

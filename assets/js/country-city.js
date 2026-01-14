@@ -4,7 +4,9 @@ const citySelect = document.getElementById("citySelect");
 async function loadCountries() {
     if (!countrySelect) return;
     try {
+        console.log('loadCountries: fetching data/countries.json');
         const res = await fetch("data/countries.json");
+        console.log('loadCountries: fetch response', res && res.status);
         const raw = await res.json();
 
         countrySelect.innerHTML = `<option value="">Select Country</option>`;
@@ -12,6 +14,7 @@ async function loadCountries() {
         // support array of strings or array of {id,name}
         const countries = Array.isArray(raw) ? raw : [];
 
+        console.log('loadCountries: parsed countries count', countries.length);
         countries.forEach(item => {
             let id, name;
             if (typeof item === 'string') {
@@ -27,12 +30,48 @@ async function loadCountries() {
             countrySelect.appendChild(option);
         });
 
-        // restore selection if saved
+        // restore selection if saved (also restore method and custom address UI if present)
         if (typeof loadSelection === 'function') {
             const saved = loadSelection();
-            if (saved && saved.country) {
-                countrySelect.value = saved.country;
-                await loadCities(saved.country);
+            if (saved) {
+                if (saved.country) {
+                    countrySelect.value = saved.country;
+                    await loadCities(saved.country);
+                }
+
+                // restore method, advanced settings and custom address inputs if available
+                try {
+                    const methodEl = document.getElementById('methodSelect');
+                    if (methodEl && saved.method) methodEl.value = saved.method;
+
+                    const tuneEl = document.getElementById('tuneInput');
+                    const tzEl = document.getElementById('timezoneInput');
+                    const calMethodEl = document.getElementById('calendarMethodSelect');
+                    const hijriY = document.getElementById('hijriYearInput');
+                    const hijriM = document.getElementById('hijriMonthInput');
+                    const shafaqEl = document.getElementById('shafaqSelect');
+                    if (tuneEl && saved.tune) tuneEl.value = saved.tune;
+                    if (tzEl && saved.timezone) tzEl.value = saved.timezone;
+                    if (calMethodEl && saved.calendarMethod) calMethodEl.value = saved.calendarMethod;
+                    if (hijriY && saved.hijriYear) hijriY.value = saved.hijriYear;
+                    if (hijriM && saved.hijriMonth) hijriM.value = saved.hijriMonth;
+                    if (shafaqEl && saved.shafaq) shafaqEl.value = saved.shafaq;
+
+                    const useCustomEl = document.getElementById('useCustomAddress');
+                    const customEl = document.getElementById('customAddressInput');
+                    if (useCustomEl) useCustomEl.checked = !!saved.useCustom;
+                    if (customEl && saved.customAddress) customEl.value = saved.customAddress;
+
+                    // advanced toggle
+                    const adv = document.getElementById('advancedToggle');
+                    if (adv) adv.checked = !!saved.advanced;
+                    // show/hide advancedOptions if present
+                    const advBox = document.getElementById('advancedOptions');
+                    if (advBox) advBox.style.display = (adv && adv.checked) ? 'flex' : 'none';
+                } catch (e) {
+                    // ignore
+                }
+
                 if (saved.city && citySelect) {
                     citySelect.value = saved.city;
                     citySelect.dispatchEvent(new Event('change'));
@@ -42,6 +81,7 @@ async function loadCountries() {
 
     } catch (e) {
         console.error('Failed to load countries', e);
+        if (countrySelect) countrySelect.innerHTML = `<option value="">Failed to load countries</option>`;
     }
 }
 

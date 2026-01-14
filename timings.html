@@ -13,7 +13,10 @@
 <body>
 
 <nav class="navbar">
-    <div class="nav-left">
+    <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="hamburger" aria-hidden="true"></span>
+    </button>
+    <div class="nav-left" id="navLeft">
         <a href="index.html">Home</a>
         <a href="calendar.html">Calendar</a>
         <a href="timings.html">Timings</a>
@@ -21,9 +24,14 @@
         <a href="zakat.html">Zakat</a>
         <a href="lunar.html">Lunar</a>
         <a href="about.html">About</a>
+        <!-- mobile-only copy of right-aligned items so they appear inside hamburger menu -->
+        <div class="nav-left-mobile-copy mobile-only" aria-hidden="true">
+            <a href="contact.html">Contact</a>
+        </div>
     </div>
     <div class="nav-right">
-        <a href="contact.html">Contact</a>
+        <a href="contact.html" class="desktop-only">Contact</a>
+        <!-- Theme toggle will be moved here by lunar.js if present -->
         <div id="navbarThemePlaceholder"></div>
     </div>
 </nav>

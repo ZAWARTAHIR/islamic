@@ -1,122 +1,163 @@
-const sehriEl = document.getElementById("sehriTime");
-const iftarEl = document.getElementById("iftarTime");
+/* main.js — Homepage initialization (refactored)
+   - Self-contained IIFE to prevent global duplicate declarations
+   - Initializes on DOMContentLoaded
+   - Loads countries via existing `loadCountries()` and restores selection
+   - Updates today's Sehri/Iftar using API helper `fetchTodayTimingsByAddress` if available
+*/
+(function(){
+  'use strict';
 
-// main.js — Global logic for home and pages
-console.log('ramzan calendar: main loaded');
+  async function updateTodayTimings(addressToUse, els, opts={}){
+    const {sehriEl, iftarEl, countdownEl} = els;
+    if (!addressToUse) return;
 
-const sehriEl = document.getElementById('sehriTime');
-const iftarEl = document.getElementById('iftarTime');
-const countdownEl = document.getElementById('countdown');
-const countrySelect = document.getElementById('countrySelect');
-const citySelect = document.getElementById('citySelect');
+    if (sehriEl) sehriEl.textContent = 'Loading…';
+    if (iftarEl) iftarEl.textContent = 'Loading…';
 
-async function updateTodayTimings(country, city) {
-    if (!country || !city) return;
     try {
-        let res = await fetch(`data/${country}/${city}.json`);
-        let data = await res.json();
-
-        // If city file doesn't contain ramzan schedule, fall back to sample
-        if (!data.ramzan) {
-            const s = await fetch('data/sample-ramzan.json');
-            data = await s.json();
+      if (typeof fetchTodayTimingsByAddress === 'function'){
+        const resp = await fetchTodayTimingsByAddress(opts);
+        const t = resp && resp.timings ? resp.timings : {};
+        const sehri = (t.Imsak || t.Fajr || '--').replace(/\s*\(.*$/,'').trim();
+        const iftar = (t.Maghrib || t.Sunset || '--').replace(/\s*\(.*$/,'').trim();
+        if (sehriEl) sehriEl.textContent = sehri;
+        if (iftarEl) iftarEl.textContent = iftar;
+        if (typeof startCountdown === 'function' && iftar && iftar !== '--'){
+          const parts = iftar.split(':').map(Number);
+          if (parts.length >= 2){
+            const now = new Date();
+            const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), parts[0], parts[1], 0);
+            startCountdown({target});
+          }
         }
-
-        const today = new Date().toISOString().split('T')[0];
-        const todayData = data.ramzan.find(d => d.date === today) || data.ramzan[0];
-
-        if (sehriEl && todayData) sehriEl.textContent = todayData.sehri || '--';
-        if (iftarEl && todayData) iftarEl.textContent = todayData.iftar || '--';
-
-        if (typeof startCountdown === 'function') startCountdownFromData(todayData);
-    } catch (e) {
-        console.error('Failed to load timings', e);
-    }
-}
-
-function startCountdownFromData(dayData) {
-    if (!dayData || !dayData.iftar) return;
-    if (!countdownEl) return;
-    const [h, m] = dayData.iftar.split(':').map(Number);
-    const now = new Date();
-    const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
-    // if target already passed, show message
-    if (target - now <= 0) {
-        countdownEl.textContent = 'Iftar time may have passed';
         return;
+      }
+
+      // fallback: do nothing (other code may handle local data)
+      if (sehriEl) sehriEl.textContent = '--';
+      if (iftarEl) iftarEl.textContent = '--';
+    } catch (err){
+      console.error('updateTodayTimings error', err);
+      if (sehriEl) sehriEl.textContent = '--';
+      if (iftarEl) iftarEl.textContent = '--';
     }
-    if (typeof startCountdown === 'function') startCountdown({target});
-}
+  }
 
-// initialize on pages that have selectors
-if (typeof loadCountries === 'function') loadCountries();
+  document.addEventListener('DOMContentLoaded', async function(){
+    const sehriEl = document.getElementById('sehriTime');
+    const iftarEl = document.getElementById('iftarTime');
+    const countdownEl = document.getElementById('countdown');
+    const countrySelect = document.getElementById('countrySelect');
+    const citySelect = document.getElementById('citySelect');
+    const methodSelect = document.getElementById('methodSelect');
+    const tuneInput = document.getElementById('tuneInput');
+    const timezoneInput = document.getElementById('timezoneInput');
+    const useCustomEl = document.getElementById('useCustomAddress');
+    const customAddressEl = document.getElementById('customAddressInput');
+    const advancedToggle = document.getElementById('advancedToggle');
+    const advancedOptions = document.getElementById('advancedOptions');
 
-if (citySelect) {
-    citySelect.addEventListener('change', async () => {
-        const country = countrySelect.value;
-        const city = citySelect.value;
-        if (!country || !city) return;
-        if (typeof saveSelection === 'function') saveSelection(country, city);
-        await updateTodayTimings(country, city);
-        // if timings table exists, populate it
-        populateTimingsTable(country, city);
-    });
-}
-
-async function populateTimingsTable(country, city) {
-    try {
-        const table = document.getElementById('timingsTable');
-        if (!table) return;
-        let res = await fetch(`data/${country}/${city}.json`);
-        let data = await res.json();
-        if (!data.ramzan) {
-            const s = await fetch('data/sample-ramzan.json');
-            data = await s.json();
-        }
-        const tbody = table.querySelector('tbody');
-        tbody.innerHTML = '';
-        data.ramzan.forEach(d => {
-            const tr = document.createElement('tr');
-            const day = document.createElement('td'); day.textContent = d.day || '-';
-            const date = document.createElement('td'); date.textContent = d.date || '-';
-            const sehri = document.createElement('td'); sehri.textContent = d.sehri || '-';
-            const iftar = document.createElement('td'); iftar.textContent = d.iftar || '-';
-            tr.appendChild(day); tr.appendChild(date); tr.appendChild(sehri); tr.appendChild(iftar);
-            tbody.appendChild(tr);
+    // small-screen hamburger toggle (if navbar markup exists)
+    const navToggle = document.getElementById('navToggle');
+    const navEl = document.querySelector('.navbar');
+    const navLeft = document.getElementById('navLeft');
+    if (navToggle && navEl) {
+      // avoid adding multiple click handlers (fallback may also bind)
+      if (!navToggle.__navBound) {
+        navToggle.addEventListener('click', function(e){
+          const isOpen = navEl.classList.toggle('open');
+          navToggle.setAttribute('aria-expanded', String(!!isOpen));
+          // prevent background scrolling when nav is open
+          document.documentElement.classList.toggle('nav-open', !!isOpen);
+          document.body.classList.toggle('nav-open', !!isOpen);
         });
-    } catch (e) {
-        console.error('Failed to populate timings table', e);
+        navToggle.__navBound = true;
+      }
+      if (navLeft) navLeft.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{ navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); document.documentElement.classList.remove('nav-open'); document.body.classList.remove('nav-open'); }));
+      document.addEventListener('click', (e)=>{ if (!navEl.contains(e.target) && navEl.classList.contains('open')) { navEl.classList.remove('open'); navToggle.setAttribute('aria-expanded','false'); document.documentElement.classList.remove('nav-open'); document.body.classList.remove('nav-open'); }});
     }
-}
 
-// On page load, if a saved selection exists, trigger update
-document.addEventListener('DOMContentLoaded', async () => {
-    if (typeof loadSelection === 'function' && countrySelect && citySelect) {
+    // load countries (provided by country-city.js)
+    try {
+      if (typeof loadCountries === 'function') await loadCountries();
+    } catch (e){ console.warn('loadCountries failed', e); }
+
+    // restore saved selection (storage.js)
+    try {
+      if (typeof loadSelection === 'function'){
         const saved = loadSelection();
-        if (saved && saved.country) {
-            countrySelect.value = saved.country;
-            if (typeof loadCities === 'function') await loadCities(saved.country);
-            if (saved.city) {
-                citySelect.value = saved.city;
-                citySelect.dispatchEvent(new Event('change'));
-            }
+        if (saved){
+          if (saved.method && methodSelect) methodSelect.value = saved.method;
+          if (saved.tune && tuneInput) tuneInput.value = saved.tune;
+          if (saved.timezone && timezoneInput) timezoneInput.value = saved.timezone;
+          if (saved.useCustom && useCustomEl) useCustomEl.checked = !!saved.useCustom;
+          if (saved.customAddress && customAddressEl) customAddressEl.value = saved.customAddress;
+          if (saved.country && countrySelect){ countrySelect.value = saved.country; if (typeof loadCities === 'function') await loadCities(saved.country); }
+          if (saved.city && citySelect) citySelect.value = saved.city;
         }
+      }
+    } catch (e){ console.warn('restore selection failed', e); }
+
+    // wire change events (keep minimal and safe)
+    if (citySelect) citySelect.addEventListener('change', async function(){
+      const country = countrySelect ? countrySelect.value : '';
+      const city = citySelect.value;
+      if (!country || !city) return;
+      if (typeof saveSelection === 'function') saveSelection(country, city);
+      const addressLabel = citySelect.options[citySelect.selectedIndex] && citySelect.options[citySelect.selectedIndex].textContent || city;
+      const countryLabel = countrySelect.options[countrySelect.selectedIndex] && countrySelect.options[countrySelect.selectedIndex].textContent || country;
+      const address = `${addressLabel}, ${countryLabel}`;
+      const opts = { address, method: methodSelect ? methodSelect.value : '3', timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+      await updateTodayTimings(address, {sehriEl, iftarEl, countdownEl}, opts);
+    });
+
+    if (methodSelect) methodSelect.addEventListener('change', async function(){
+      if (typeof saveSelection === 'function') saveSelection(countrySelect ? countrySelect.value : '', citySelect ? citySelect.value : '');
+      if (countrySelect && citySelect && citySelect.value) {
+        const address = `${citySelect.options[citySelect.selectedIndex].textContent}, ${countrySelect.options[countrySelect.selectedIndex].textContent}`;
+        const opts = { address, method: methodSelect.value, timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+        await updateTodayTimings(address, {sehriEl, iftarEl, countdownEl}, opts);
+      }
+    });
+
+    // advanced toggle
+    if (advancedToggle && advancedOptions) advancedToggle.addEventListener('change', function(){ advancedOptions.style.display = advancedToggle.checked ? 'flex' : 'none'; if (typeof saveSelection === 'function') saveSelection(countrySelect ? countrySelect.value : '', citySelect ? citySelect.value : ''); });
+
+    if (useCustomEl && customAddressEl){
+      useCustomEl.addEventListener('change', function(){
+        customAddressEl.parentElement.style.display = useCustomEl.checked ? 'block' : 'none';
+      });
     }
-});
-    const country = countrySelect.value;
-    const city = citySelect.value;
 
-    if (!country || !city) return;
+    // initial timings load if selection present
+    try {
+      const saved = (typeof loadSelection === 'function') ? loadSelection() : null;
+      let addressToUse = '';
+      if (saved && saved.useCustom && saved.customAddress) addressToUse = saved.customAddress;
+      else if (countrySelect && citySelect && countrySelect.value && citySelect.value) addressToUse = `${citySelect.options[citySelect.selectedIndex].textContent}, ${countrySelect.options[countrySelect.selectedIndex].textContent}`;
+      if (addressToUse) {
+        const opts = { address: addressToUse, method: methodSelect ? methodSelect.value : '3', timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+        await updateTodayTimings(addressToUse, {sehriEl, iftarEl, countdownEl}, opts);
+      }
+    } catch (e){ /* ignore */ }
 
-    const res = await fetch(`data/${country}/${city}.json`);
-    const data = await res.json();
+  }); // DOMContentLoaded
 
-    // For demo: Day 1
-    sehriEl.textContent = data.ramzan[0].sehri;
-    iftarEl.textContent = data.ramzan[0].iftar;
-});
+})();
 
-loadCountries();
-citySelect.addEventListener("change", () => {
-    startCountdown(countrySelect.value, citySelect.value);
-});
+// Fallback: attach a lightweight navToggle handler immediately if element exists
+(function(){
+  try {
+    const t = document.getElementById('navToggle');
+    const nav = document.querySelector('.navbar');
+    if (!t || !nav) return;
+    // don't double-bind
+    if (t.__navBound) return; t.__navBound = true;
+    t.addEventListener('click', function(){
+      const open = nav.classList.toggle('open');
+      t.setAttribute('aria-expanded', String(!!open));
+      document.documentElement.classList.toggle('nav-open', !!open);
+      document.body.classList.toggle('nav-open', !!open);
+    });
+  } catch(e){ /* ignore */ }
+})();

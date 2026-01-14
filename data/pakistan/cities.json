@@ -1,4 +1,15 @@
 {
   "country": "Pakistan",
-  "cities": ["Karachi", "Lahore", "Islamabad"]
+  "cities": [
+    "Karachi",
+    "Lahore",
+    "Islamabad",
+    "Rawalpindi",
+    "Faisalabad",
+    "Peshawar",
+    "Quetta",
+    "Multan",
+    "Sialkot",
+    "Hyderabad"
+  ]
 }

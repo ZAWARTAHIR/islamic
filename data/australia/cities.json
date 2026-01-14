@@ -1,0 +1,15 @@
+{
+  "country": "Australia",
+  "cities": [
+    "Sydney",
+    "Melbourne",
+    "Brisbane",
+    "Perth",
+    "Adelaide",
+    "Gold Coast",
+    "Newcastle",
+    "Canberra",
+    "Wollongong",
+    "Hobart"
+  ]
+}

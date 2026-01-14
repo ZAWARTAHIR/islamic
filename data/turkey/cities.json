@@ -1,0 +1,15 @@
+{
+  "country": "Turkey",
+  "cities": [
+    "Istanbul",
+    "Ankara",
+    "Izmir",
+    "Bursa",
+    "Antalya",
+    "Adana",
+    "Gaziantep",
+    "Konya",
+    "Mersin",
+    "Kayseri"
+  ]
+}

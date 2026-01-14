@@ -13,7 +13,10 @@
 <body>
 
 <nav class="navbar">
-    <div class="nav-left">
+    <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="hamburger" aria-hidden="true"></span>
+    </button>
+    <div class="nav-left" id="navLeft">
         <a href="index.html">Home</a>
         <a href="calendar.html">Calendar</a>
         <a href="timings.html">Timings</a>
@@ -21,9 +24,14 @@
         <a href="zakat.html">Zakat</a>
         <a href="lunar.html">Lunar</a>
         <a href="about.html">About</a>
+        <!-- mobile-only copy of right-aligned items so they appear inside hamburger menu -->
+        <div class="nav-left-mobile-copy mobile-only" aria-hidden="true">
+            <a href="contact.html">Contact</a>
+        </div>
     </div>
     <div class="nav-right">
-        <a href="contact.html">Contact</a>
+        <a href="contact.html" class="desktop-only">Contact</a>
+        <!-- Theme toggle will be moved here by lunar.js if present -->
         <div id="navbarThemePlaceholder"></div>
     </div>
 </nav>
@@ -42,6 +50,66 @@
         <label>City
             <select id="citySelect"><option value="">Select Country</option></select>
         </label>
+        <label>Calculation Method
+            <select id="methodSelect">
+                <option value="3">University of Islamic Sciences, Karachi</option>
+                <option value="1">Shia Ithna-Ashari</option>
+                <option value="2">ISNA</option>
+                <option value="4">MWL</option>
+                <option value="7">Tehran</option>
+            </select>
+        </label>
+
+        <label><input type="checkbox" id="advancedToggle"> Advanced</label>
+
+        <div id="advancedOptions" style="display:none;gap:8px;flex-wrap:wrap;display:flex;">
+            <label>Shafaq
+                <select id="shafaqSelect">
+                    <option value="general">General</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                </select>
+            </label>
+            <label>Hijri Year
+                <input id="hijriYearInput" type="number" value="1446" min="1400" max="1600">
+            </label>
+            <label>Hijri Month
+                <input id="hijriMonthInput" type="number" value="7" min="1" max="12">
+            </label>
+            <label> Tune (comma-separated)
+                <input id="tuneInput" type="text" placeholder="e.g. 5,3,5,7,9,-1,0,8,-6">
+            </label>
+            <label>Timezone
+                <input id="timezoneInput" type="text" value="UTC">
+            </label>
+            <label>Calendar Method
+                <select id="calendarMethodSelect">
+                    <option value="UAQ">UAQ</option>
+                    <option value="Other">Other</option>
+                </select>
+            </label>
+        </div>
+        <label>Tune (comma-separated)
+            <input id="tuneInput" type="text" placeholder="e.g. 5,3,5,7,9,-1,0,8,-6">
+        </label>
+        <label>Timezone
+            <input id="timezoneInput" type="text" value="UTC">
+        </label>
+        <label>Calendar Method
+            <select id="calendarMethodSelect">
+                <option value="UAQ">UAQ</option>
+                <option value="Other">Other</option>
+            </select>
+        </label>
+    </section>
+    <section class="selectors">
+        <div class="field small">
+            <label><input type="checkbox" id="useCustomAddress"> Use custom address</label>
+        </div>
+        <div class="field">
+            <label for="customAddressInput">Custom Address</label>
+            <input id="customAddressInput" type="text" placeholder="e.g. Trafalgar Square, London, UK">
+        </div>
     </section>
 
     <section id="calendarContainer" class="calendar-container card">
@@ -89,7 +157,9 @@
 
 <script src="assets/js/storage.js"></script>
 <script src="assets/js/country-city.js"></script>
+<script src="assets/js/api-service.js"></script>
 <script src="assets/js/calendar.js"></script>
+<script src="assets/js/main.js"></script>
 <script src="assets/js/lunar.js"></script>
 <script>
 document.getElementById('printCalendar').addEventListener('click', ()=>window.print());

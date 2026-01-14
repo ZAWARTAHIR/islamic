@@ -4,7 +4,10 @@
   function ensureSunCalc(callback){
     if(window.SunCalc) return callback();
     const s = document.createElement('script');
-    s.src = SUNCALC_CDN; s.onload = callback; s.async = true; document.head.appendChild(s);
+    s.src = SUNCALC_CDN;
+    s.onload = callback;
+    s.onerror = function(){ console.warn('SunCalc failed to load'); callback(); };
+    s.async = true; document.head.appendChild(s);
   }
 
   // create theme switch UI if not present
@@ -17,7 +20,16 @@
       </div>
       <span style="font-size:1.2em;">🌟</span>
     `;
-    // Place fixed top-right switch (restore original behavior)
+    // Prefer injecting into navbar placeholder so toggle appears in navbar like other pages
+    const placeholder = document.getElementById('navbarThemePlaceholder');
+    if(placeholder){
+      const wrapper = document.createElement('div');
+      wrapper.className = 'theme-switch navbar-toggle';
+      wrapper.innerHTML = html;
+      placeholder.appendChild(wrapper);
+      return;
+    }
+    // fallback: Place fixed top-right switch
     const wrapper = document.createElement('div');
     wrapper.className = 'theme-switch';
     wrapper.style.position = 'fixed';
@@ -172,7 +184,23 @@
       }
       setInterval(updatePrayerTimes, 60*1000); updatePrayerTimes();
 
+      // hide overlay after successful render of initial data
+      try{ hideLoadingOverlay(); }catch(e){}
+
     }
+
+  // hide the loading overlay (safe no-op if element missing)
+  function hideLoadingOverlay(){
+    try{
+      const o = document.getElementById('loading-overlay');
+      if(!o) return;
+      o.classList.add('hide');
+      setTimeout(()=>{ if(o.parentNode) o.parentNode.removeChild(o); }, 500);
+    }catch(e){ console.warn('hideLoadingOverlay error', e); }
+  }
+
+  // fallback: ensure overlay removed even if some init path fails
+  setTimeout(hideLoadingOverlay, 2500);
   }
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

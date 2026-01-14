@@ -3,13 +3,39 @@
   --surface:#ffffff;
   --muted:#6b7280;
   --accent:#2563eb;
+  --primary:var(--accent);
+  --gold:#c49a3f;
   --radius:12px;
+}
+
+/* Ensure theme-toggle ball is vertically centered in navbar and elsewhere */
+.theme-toggle .toggle-ball{
+  /* nudge slightly lower to avoid appearing high on some devices */
+  top: 50%;
+  left: auto;
+  right: auto;
+  transform:translateY(-15%);
+  transition: left 0.4s, background 0.5s, transform 0.2s;
+}
+
+/* prevent background scrolling when nav is open */
+html.nav-open, body.nav-open {
+  height:100%;
+  overflow:hidden;
+  touch-action:none;
+}
+
+/* Dark theme variable overrides — components using CSS variables will follow */
+body.dark{
+  --bg: #0f1724;
+  --surface: #0b1116;
+  --muted: #9aa3af;
+  --accent: #60a5fa;
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;background:var(--bg);color:#0f172a}
 .container{max-width:1100px;margin:28px auto;padding:18px}
 .navbar{
-  /* lighter Islamic green gradient for better contrast */
   background: linear-gradient(90deg, rgba(34,140,95,0.98), rgba(18,110,70,0.95));
   padding:10px 20px;
   display:flex;
@@ -20,25 +46,87 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;background:v
   position:sticky;top:0;z-index:1200;
   backdrop-filter: blur(6px);
 }
+
+/* Support: center theme toggle when navbar is used as a vertical sidebar.
+   Apply the `vertical` class to `nav.navbar` to enable this layout. */
+.navbar.vertical{
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:16px 12px;
+}
+.navbar.vertical .nav-left{order:1;width:100%}
+.navbar.vertical .nav-right{order:2;width:100%;display:flex;justify-content:center}
+.navbar.vertical #navbarThemePlaceholder,
+.navbar.vertical .theme-switch,
+.navbar.vertical .theme-switch.navbar-toggle{position:relative;top:auto;right:auto;transform:none;margin:12px 0;}
 .navbar a{color:var(--gold);text-decoration:none;font-weight:700;padding:8px 12px;border-radius:8px;transition:all .18s ease;display:inline-block}
 .navbar a:hover{background:rgba(255,249,230,0.06);transform:translateY(-2px);box-shadow:0 6px 18px rgba(2,6,23,0.06)}
 .navbar a:focus{outline:2px solid rgba(196,154,63,0.2)}
+
+/* utility classes to show/hide content per breakpoint */
+.desktop-only{display:inline-block}
+.mobile-only{display:none}
 
 /* responsive: horizontal scroll if many links */
 @media (max-width:720px){
   .navbar{padding:8px 12px;gap:8px}
   .navbar a{padding:8px 10px;font-size:14px}
-  .navbar{overflow-x:auto;justify-content:flex-start;padding-left:14px}
+  /* disable horizontal scroll on navbar when using hamburger menu */
+  .navbar{overflow-x:visible;justify-content:flex-start;padding-left:14px;white-space:normal}
+}
+
+/* Hamburger toggle */
+.nav-toggle{display:none;background:none;border:0;padding:6px;margin-right:8px;cursor:pointer}
+.nav-toggle{background:transparent}
+.nav-toggle{border:0}
+.nav-toggle .hamburger{display:block;width:22px;height:2px;background:#fff;position:relative;border-radius:2px}
+.nav-toggle .hamburger::before,.nav-toggle .hamburger::after{content:'';display:block;position:absolute;left:0;width:100%;height:2px;background:#fff;border-radius:2px}
+.nav-toggle .hamburger::before{transform:translateY(-7px)}
+.nav-toggle .hamburger::after{transform:translateY(7px)}
+
+@media (max-width:720px){
+  .nav-toggle{display:block;position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:1302}
+  /* place theme toggle top-right */
+  .nav-right{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:8px}
+  /* ensure navbar has enough vertical space for hamburger */
+  .navbar{min-height:48px;padding-top:8px;padding-bottom:8px}
+  /* hide link labels in top bar: only show hamburger + theme placeholder */
+  .nav-right a{display:none}
+  /* desktop/ mobile helpers */
+  .desktop-only{display:none}
+  .mobile-only{display:block}
+  #navbarThemePlaceholder{display:block}
+
+  .nav-left{display:none;position:absolute;left:0;top:100%;right:0;background:var(--surface);flex-direction:column;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,0.12);z-index:1201}
+  .navbar.open .nav-left{display:flex}
+  .nav-left a{display:block;padding:10px;color:inherit}
+
+  /* If lunar theme forces .nav-left visible, ensure it's hidden on small screens until toggled */
+  .lunar-enabled .navbar .nav-left{display:none !important}
+  .lunar-enabled .navbar.open .nav-left{display:flex !important}
+
+  /* mobile menu visual tweaks */
+  .nav-left{border-radius:8px;margin:0 12px}
+  .nav-left a{color:var(--muted);padding:12px 14px;border-radius:6px}
+  .nav-left a:hover{background:rgba(0,0,0,0.04);transform:none}
+  .nav-left-mobile-copy{display:block}
+  /* keep mobile copy visually consistent with other menu items */
+  .nav-left .nav-left-mobile-copy{margin-top:0;padding-top:0;border-top:0}
+  .nav-left a, .nav-left-mobile-copy a{display:block;padding:12px 14px;color:var(--muted);text-align:left}
+  .nav-left-mobile-copy a{padding:10px;color:var(--muted);display:block}
 }
 .hero{padding:18px 0}
 .lead{color:var(--muted);margin-top:6px}
 .selectors{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
 .field{min-width:160px}
+/* smaller-field for compact inputs near selectors */
+.field.small{min-width:120px}
 label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-select, input, textarea{padding:10px;border-radius:10px;border:1px solid #e6e9ef;background:#fff;width:100%}
+select, input, textarea{padding:10px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:var(--surface);width:100%;color:inherit}
 .card{background:var(--surface);padding:16px;border-radius:var(--radius);box-shadow:0 6px 20px rgba(2,6,23,0.03);margin:12px 0}
 .timing-row{margin:8px 0}
-.footer{padding:22px 16px;color:#f3efd8;font-size:14px;background:linear-gradient(90deg,var(--primary),#0b6b48);border-top:4px solid rgba(196,154,63,0.08)}
+.footer{padding:22px 16px;color:var(--muted);font-size:14px;background:var(--surface);border-top:4px solid var(--accent)}
 .actions{margin-top:12px}
 button{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
 button:disabled{opacity:.6}
@@ -58,15 +146,21 @@ button:disabled{opacity:.6}
 .info-card h3{margin:0 0 8px 0;color:var(--primary)}
 .info-card p{margin:0;color:var(--muted);font-size:14px}
 
+/* Dark theme tweaks for cards and inputs to avoid whitish appearance */
+body.dark select, body.dark input, body.dark textarea{border-color:rgba(255,255,255,0.06)}
+body.dark .card{box-shadow:0 8px 30px rgba(0,0,0,0.6);color:var(--muted)}
+body.dark .info-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), var(--surface));box-shadow:0 8px 30px rgba(0,0,0,0.6);border-left-color:var(--primary);color:var(--muted)}
+body.dark .info-card h3{color:var(--accent)}
+
 
 /* footer link styles */
 .footer .footer-inner{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto}
 .footer .footer-links{display:flex;gap:10px;flex-wrap:wrap}
-.footer .footer-links a{color:rgba(255,255,255,0.92);text-decoration:none;padding:6px 10px;border-radius:6px;background:rgba(255,255,255,0.03);transition:all .15s ease}
-.footer .footer-links a:hover{background:rgba(196,154,63,0.12);color:var(--gold);transform:translateY(-2px)}
-.footer .footer-meta{color:rgba(248,230,178,0.95);font-size:13px;text-align:right}
+.footer .footer-links a{color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px;background:rgba(0,0,0,0.02);transition:all .15s ease}
+.footer .footer-links a:hover{background:rgba(0,0,0,0.04);color:var(--accent);transform:translateY(-2px)}
+.footer .footer-meta{color:var(--muted);font-size:13px;text-align:right}
 .footer .social{display:flex;gap:8px;align-items:center}
-.footer .social a{color:rgba(255,255,255,0.92);background:rgba(0,0,0,0.06);padding:6px 8px;border-radius:6px}
+.footer .social a{color:var(--muted);background:rgba(0,0,0,0.02);padding:6px 8px;border-radius:6px}
 
 @media (max-width:720px){
   .footer{padding:18px 12px}
