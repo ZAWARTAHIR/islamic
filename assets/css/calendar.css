@@ -150,40 +150,34 @@
 }
 
 /* =====================================================
-   PRINT MODE
+   DOWNLOAD TABLE STYLES
 ===================================================== */
 
-@media print {
-    body {
-        background: #ffffff;
-    }
+.download-table {
+    font-size: 14px !important;
+}
 
-    .navbar,
-    .footer,
-    .actions,
-    .selectors,
-    .calendar-controls {
-        display: none !important;
-    }
+.download-table th,
+.download-table td {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    border: 1px solid #ddd !important;
+}
 
-    .calendar-container {
-        overflow: visible;
-        max-width: none;
-        padding: 0;
-    }
+.download-table th {
+    background-color: #0b3d2e !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+}
 
-    .timings-table {
-        min-width: 100%;
-        width: 100%;
-        box-shadow: none;
-        border: 1px solid #000;
-        margin: 0;
-    }
+.download-table td {
+    text-align: center !important;
+    background-color: #ffffff !important;
+}
 
-    .timings-table th {
-        background: #000 !important;
-        color: #fff !important;
-    }
+.download-table tr:nth-child(even) {
+    background-color: #f9f9f9 !important;
 }
 
 

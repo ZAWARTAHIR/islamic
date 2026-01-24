@@ -183,17 +183,28 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
         const city = document.getElementById('citySelect').value;
         
         if (country && city) {
-            // Re-render as desktop table
+            // Re-render as desktop table with proper styling for download
             const use24HourCheckbox = document.getElementById('use24HourFormat');
             const use24Hour = use24HourCheckbox ? use24HourCheckbox.checked : false;
             
-            // Get the data from the last rendered data (we'll need to modify calendar.js to expose this)
+            // Get the data from the last rendered data
             if (window.lastCalendarData) {
                 const table = document.createElement('table');
-                table.className = 'timings-table';
+                table.className = 'timings-table download-table';
+                table.style.cssText = `
+                    width: 100%;
+                    min-width: 600px;
+                    table-layout: fixed;
+                    margin: 0;
+                    border-collapse: collapse;
+                    background: #ffffff;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                `;
+                
                 const thead = document.createElement('thead');
-                thead.innerHTML = '<tr><th>Day</th><th>Hijri Date</th><th>Gregorian Date</th><th>Sehri End</th><th>Iftar</th></tr>';
+                thead.innerHTML = '<tr><th style="width: 10%">Day</th><th style="width: 25%">Hijri Date</th><th style="width: 25%">Gregorian Date</th><th style="width: 20%">Sehri End</th><th style="width: 20%">Iftar</th></tr>';
                 table.appendChild(thead);
+                
                 const tbody = document.createElement('tbody');
                 window.lastCalendarData.forEach(d => {
                     const tr = document.createElement('tr');
@@ -208,12 +219,18 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
     }
 
     try {
-        // Generate canvas from calendar container with optimized settings for smaller file size
+        // Generate canvas from calendar container with settings optimized for full table capture
         const canvas = await html2canvas(calendarContainer, {
-            scale: 1.5, // Reduced from 2 to 1.5 for smaller file size
+            scale: 1.5,
             useCORS: true,
             allowTaint: true,
-            backgroundColor: '#ffffff'
+            backgroundColor: '#ffffff',
+            width: calendarContainer.scrollWidth,
+            height: calendarContainer.scrollHeight,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: calendarContainer.scrollWidth,
+            windowHeight: calendarContainer.scrollHeight
         });
 
         // Create PDF in A4 portrait for better calendar layout
@@ -225,26 +242,30 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
         const pdfWidth = pdf.internal.pageSize.getWidth();  // 210mm in portrait
         const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm in portrait
         
-        // Calculate dimensions to fit the canvas in the PDF
+        // Calculate dimensions to fit the full table in A4 with proper margins
         const canvasAspectRatio = canvas.width / canvas.height;
-        const pdfAspectRatio = pdfWidth / pdfHeight;
+        
+        // For calendar tables, prioritize fitting full width with margins
+        const maxWidth = pdfWidth - 20;  // 190mm usable width (10mm margins)
+        const maxHeight = pdfHeight - 20; // 277mm usable height
         
         let imgWidth, imgHeight;
-        if (canvasAspectRatio > pdfAspectRatio) {
-            // Canvas is wider than PDF - fit to width
-            imgWidth = pdfWidth;
-            imgHeight = pdfWidth / canvasAspectRatio;
-        } else {
-            // Canvas is taller than PDF - fit to height
-            imgHeight = pdfHeight;
-            imgWidth = pdfHeight * canvasAspectRatio;
+        
+        // Fit to width first, then scale height
+        imgWidth = maxWidth;
+        imgHeight = maxWidth / canvasAspectRatio;
+        
+        // If height exceeds page, scale down proportionally
+        if (imgHeight > maxHeight) {
+            imgHeight = maxHeight;
+            imgWidth = maxHeight * canvasAspectRatio;
         }
         
         // Center the image on the page
         const x = (pdfWidth - imgWidth) / 2;
         const y = (pdfHeight - imgHeight) / 2;
         
-        pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
         
         // Get location info for filename
         const countrySelect = document.getElementById('countrySelect');
