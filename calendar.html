@@ -38,7 +38,7 @@
 
 <main class="container">
     <header>
-        <div class="page-hero card"><img src="assets/images/calendar-hero.svg" alt="Calendar hero"></div>
+        <div class="page-hero card"><img src="assets/images/islam.jpg" alt="Calendar hero"></div>
         <h1>Ramzan Calendar — Monthly View</h1>
         <p class="lead">Printable calendar with daily Sehri and Iftar times.</p>
     </header>
@@ -60,7 +60,7 @@
             </select>
         </label>
 
-        <label><input type="checkbox" id="advancedToggle"> Advanced</label>
+        <!-- <label><input type="checkbox" id="advancedToggle"> Advanced</label> -->
 
         <div id="advancedOptions" style="display:none;gap:8px;flex-wrap:wrap;display:flex;">
             <label>Shafaq
@@ -76,22 +76,22 @@
             <label>Hijri Month
                 <input id="hijriMonthInput" type="number" value="7" min="1" max="12">
             </label>
-            <label> Tune (comma-separated)
+            <!-- <label> Tune (comma-separated)
                 <input id="tuneInput" type="text" placeholder="e.g. 5,3,5,7,9,-1,0,8,-6">
-            </label>
-            <label>Timezone
+            </label> -->
+            <!-- <label>Timezone
                 <input id="timezoneInput" type="text" value="UTC">
-            </label>
-            <label>Calendar Method
+            </label> -->
+            <!-- <label>Calendar Method
                 <select id="calendarMethodSelect">
                     <option value="UAQ">UAQ</option>
                     <option value="Other">Other</option>
                 </select>
-            </label>
+            </label> -->
         </div>
-        <label>Tune (comma-separated)
-            <input id="tuneInput" type="text" placeholder="e.g. 5,3,5,7,9,-1,0,8,-6">
-        </label>
+        <!-- <label>Tune (comma-separated)
+            <input id="tuneInput" type="text" placeholder="e.g. 5,3,5,7,9,-1,0,8,-6"> -->
+        <!-- </label>
         <label>Timezone
             <input id="timezoneInput" type="text" value="UTC">
         </label>
@@ -100,24 +100,22 @@
                 <option value="UAQ">UAQ</option>
                 <option value="Other">Other</option>
             </select>
-        </label>
-    </section>
-    <section class="selectors">
-        <div class="field small">
-            <label><input type="checkbox" id="useCustomAddress"> Use custom address</label>
-        </div>
-        <div class="field">
-            <label for="customAddressInput">Custom Address</label>
-            <input id="customAddressInput" type="text" placeholder="e.g. Trafalgar Square, London, UK">
-        </div>
+        </label> -->
     </section>
 
-    <section id="calendarContainer" class="calendar-container card">
+    <!-- 24-hour format checkbox above calendar -->
+    <div class="calendar-controls">
+        <label>
+            <input type="checkbox" id="use24HourFormat"> Use 24-hour format
+        </label>
+    </div>
+
+    <section id="calendarContainer" class="calendar-container">
         <!-- Calendar days will render here -->
     </section>
 
     <div class="actions">
-        <button id="printCalendar">Print Calendar</button>
+        <button id="downloadCalendar">Download Calendar</button>
     </div>
     
     <section class="card-grid">
@@ -127,7 +125,7 @@
         </article>
         <article class="info-card">
             <h3>Printable Tips</h3>
-            <p>Use the Print button for a clean calendar layout; set page size to A4 and landscape for best results.</p>
+            <p>Use the Download button for a clean calendar PDF; prints perfectly on A4 portrait paper.</p>
         </article>
         <article class="info-card">
             <h3>Hijri Conversion</h3>
@@ -155,6 +153,8 @@
     </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="assets/js/storage.js"></script>
 <script src="assets/js/country-city.js"></script>
 <script src="assets/js/api-service.js"></script>
@@ -162,7 +162,129 @@
 <script src="assets/js/main.js"></script>
 <script src="assets/js/lunar.js"></script>
 <script>
-document.getElementById('printCalendar').addEventListener('click', ()=>window.print());
+document.getElementById('downloadCalendar').addEventListener('click', async function() {
+    const calendarContainer = document.getElementById('calendarContainer');
+    
+    if (!calendarContainer || calendarContainer.children.length === 0) {
+        alert('Please select a country and city first to generate the calendar.');
+        return;
+    }
+
+    // Check if we're on mobile and temporarily force desktop view for download
+    const isMobile = window.innerWidth < 900;
+    let originalContent = '';
+    
+    if (isMobile) {
+        // Store original mobile content
+        originalContent = calendarContainer.innerHTML;
+        
+        // Force desktop table view for download
+        const country = document.getElementById('countrySelect').value;
+        const city = document.getElementById('citySelect').value;
+        
+        if (country && city) {
+            // Re-render as desktop table
+            const use24HourCheckbox = document.getElementById('use24HourFormat');
+            const use24Hour = use24HourCheckbox ? use24HourCheckbox.checked : false;
+            
+            // Get the data from the last rendered data (we'll need to modify calendar.js to expose this)
+            if (window.lastCalendarData) {
+                const table = document.createElement('table');
+                table.className = 'timings-table';
+                const thead = document.createElement('thead');
+                thead.innerHTML = '<tr><th>Day</th><th>Hijri Date</th><th>Gregorian Date</th><th>Sehri End</th><th>Iftar</th></tr>';
+                table.appendChild(thead);
+                const tbody = document.createElement('tbody');
+                window.lastCalendarData.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${d.day}</td><td>${d.hijriDate}</td><td>${d.gregorianDate}</td><td>${formatTime(d.sehri, use24Hour)}</td><td>${formatTime(d.iftar, use24Hour)}</td>`;
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                calendarContainer.innerHTML = '';
+                calendarContainer.appendChild(table);
+            }
+        }
+    }
+
+    try {
+        // Generate canvas from calendar container with optimized settings for smaller file size
+        const canvas = await html2canvas(calendarContainer, {
+            scale: 1.5, // Reduced from 2 to 1.5 for smaller file size
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+        });
+
+        // Create PDF in A4 portrait for better calendar layout
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4'); // portrait, millimeters, A4
+        
+        // Use JPEG with quality compression for smaller file size
+        const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG with 85% quality
+        const pdfWidth = pdf.internal.pageSize.getWidth();  // 210mm in portrait
+        const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm in portrait
+        
+        // Calculate dimensions to fit the canvas in the PDF
+        const canvasAspectRatio = canvas.width / canvas.height;
+        const pdfAspectRatio = pdfWidth / pdfHeight;
+        
+        let imgWidth, imgHeight;
+        if (canvasAspectRatio > pdfAspectRatio) {
+            // Canvas is wider than PDF - fit to width
+            imgWidth = pdfWidth;
+            imgHeight = pdfWidth / canvasAspectRatio;
+        } else {
+            // Canvas is taller than PDF - fit to height
+            imgHeight = pdfHeight;
+            imgWidth = pdfHeight * canvasAspectRatio;
+        }
+        
+        // Center the image on the page
+        const x = (pdfWidth - imgWidth) / 2;
+        const y = (pdfHeight - imgHeight) / 2;
+        
+        pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+        
+        // Get location info for filename
+        const countrySelect = document.getElementById('countrySelect');
+        const citySelect = document.getElementById('citySelect');
+        const countryName = countrySelect.options[countrySelect.selectedIndex]?.text || 'Unknown';
+        const cityName = citySelect.options[citySelect.selectedIndex]?.text || 'Unknown';
+        
+        const filename = `Ramzan_Calendar_${cityName}_${countryName}.pdf`;
+        pdf.save(filename);
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating calendar PDF. Please try again.');
+    } finally {
+        // Restore original mobile content if it was changed
+        if (isMobile && originalContent) {
+            calendarContainer.innerHTML = originalContent;
+        }
+    }
+});
+
+// Helper function for time formatting (same as in calendar.js)
+function formatTime(timeString, use24Hour = false) {
+    if (!timeString || timeString === '--') return timeString;
+
+    const cleanTime = timeString.replace(/\s*\(.*$/,'').trim();
+    const timeMatch = cleanTime.match(/^(\d{1,2}):(\d{2})$/);
+    if (!timeMatch) return cleanTime;
+
+    const hours = parseInt(timeMatch[1]);
+    const minutes = timeMatch[2];
+
+    if (use24Hour) {
+        return `${hours.toString().padStart(2, '0')}:${minutes}`;
+    } else {
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+        return `${displayHours}:${minutes} ${period}`;
+    }
+}
 </script>
 
 </body>

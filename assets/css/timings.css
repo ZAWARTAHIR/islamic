@@ -3,18 +3,43 @@
     overflow-x: auto;
 }
 
+/* Large screens: center the table section */
+@media (min-width: 1200px) {
+    .table-section {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 30px;
+    }
+}
+
 table {
     width: 100%;
     max-width: 800px;
     margin: auto;
     border-collapse: collapse;
     background: white;
+    
+}
+
+/* Large screens: make table wider */
+@media (min-width: 1200px) {
+    table {
+        max-width: 1400px;
+    }
 }
 
 th, td {
     padding: 12px;
     border: 1px solid #ddd;
     text-align: center;
+}
+
+/* Large screens: more padding for better readability */
+@media (min-width: 1200px) {
+    th, td {
+        padding: 16px;
+        font-size: 16px;
+    }
 }
 
 th {

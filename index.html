@@ -38,7 +38,7 @@
 <main class="container">
     <header class="hero">
         <div class="page-hero card">
-            <img src="assets/images/mosque-hero.svg" alt="Ramzan hero" />
+            <img src="assets/images/islam.jpg" alt="Ramzan hero" />
         </div>
         <h1>Ramzan Calendar</h1>
         <p class="lead">Choose your country and city to view Sehri & Iftar timings and the full Ramzan calendar.</p>
@@ -64,11 +64,11 @@
             </select>
         </div>
 
-        <div class="field small">
+        <!-- <div class="field small">
             <label><input type="checkbox" id="advancedToggle"> Advanced</label>
-        </div>
+        </div> -->
 
-        <div id="advancedOptions" style="display:none;gap:8px;flex-wrap:wrap;display:flex;">
+        <!-- <div id="advancedOptions" style="display:none;gap:8px;flex-wrap:wrap;display:flex;">
             <div class="field small">
                 <label for="timezoneInput">Timezone</label>
                 <input id="timezoneInput" type="text" value="UTC">
@@ -80,11 +80,11 @@
         </div>
         <div class="field small">
             <label><input type="checkbox" id="useCustomAddress"> Use custom address</label>
-        </div>
-        <div class="field small">
+        </div> -->
+        <!-- <div class="field small">
             <label for="customAddressInput">Custom Address</label>
             <input id="customAddressInput" type="text" placeholder="e.g. Trafalgar Square, London, UK">
-        </div>
+        </div> -->
     </section>
 
     <section class="today-timings card">
@@ -92,6 +92,11 @@
         <div class="timing-row"><strong>Sehri:</strong> <span id="sehriTime">--</span></div>
         <div class="timing-row"><strong>Iftar:</strong> <span id="iftarTime">--</span></div>
         <div class="timing-row"><strong>Countdown:</strong> <span id="countdown">--</span></div>
+        <div class="timing-row">
+            <label style="font-weight: normal; font-size: 0.9em;">
+                <input type="checkbox" id="use24HourFormat" style="margin-right: 5px;"> Use 24-hour format
+            </label>
+        </div>
         <p class="note">For full month calendar and printable schedules, open the <a href="calendar.html">Calendar</a> or <a href="timings.html">Timings</a> page.</p>
     </section>
 

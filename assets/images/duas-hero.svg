@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300">
-  <rect width="800" height="300" fill="#0f5132" />
-  <g transform="translate(80,40)" fill="#f8e6b2">
-    <path d="M40 180c40-60 120-60 160 0v40H40v-40z" />
-    <rect x="260" y="70" width="360" height="140" rx="12" />
-  </g>
-  <text x="40" y="260" fill="#f8e6b2" font-size="20">Duas & Supplications</text>
-</svg>

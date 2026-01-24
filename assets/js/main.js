@@ -7,6 +7,29 @@
 (function(){
   'use strict';
 
+  // Time formatting function
+  function formatTime(timeString, use24Hour = false) {
+    if (!timeString || timeString === '--') return timeString;
+
+    // Remove any parentheses and extra text
+    const cleanTime = timeString.replace(/\s*\(.*$/,'').trim();
+
+    // Check if it's already in HH:MM format
+    const timeMatch = cleanTime.match(/^(\d{1,2}):(\d{2})$/);
+    if (!timeMatch) return cleanTime;
+
+    const hours = parseInt(timeMatch[1]);
+    const minutes = timeMatch[2];
+
+    if (use24Hour) {
+      return `${hours.toString().padStart(2, '0')}:${minutes}`;
+    } else {
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+      return `${displayHours}:${minutes} ${period}`;
+    }
+  }
+
   async function updateTodayTimings(addressToUse, els, opts={}){
     const {sehriEl, iftarEl, countdownEl} = els;
     if (!addressToUse) return;
@@ -20,8 +43,14 @@
         const t = resp && resp.timings ? resp.timings : {};
         const sehri = (t.Imsak || t.Fajr || '--').replace(/\s*\(.*$/,'').trim();
         const iftar = (t.Maghrib || t.Sunset || '--').replace(/\s*\(.*$/,'').trim();
-        if (sehriEl) sehriEl.textContent = sehri;
-        if (iftarEl) iftarEl.textContent = iftar;
+
+        // Check 24-hour format preference
+        const use24HourCheckbox = document.getElementById('use24HourFormat');
+        const use24Hour = use24HourCheckbox ? use24HourCheckbox.checked : false;
+
+        if (sehriEl) sehriEl.textContent = formatTime(sehri, use24Hour);
+        if (iftarEl) iftarEl.textContent = formatTime(iftar, use24Hour);
+
         if (typeof startCountdown === 'function' && iftar && iftar !== '--'){
           const parts = iftar.split(':').map(Number);
           if (parts.length >= 2){
@@ -120,12 +149,22 @@
       }
     });
 
-    // advanced toggle
-    if (advancedToggle && advancedOptions) advancedToggle.addEventListener('change', function(){ advancedOptions.style.display = advancedToggle.checked ? 'flex' : 'none'; if (typeof saveSelection === 'function') saveSelection(countrySelect ? countrySelect.value : '', citySelect ? citySelect.value : ''); });
+    // 24-hour format checkbox
+    const use24HourCheckbox = document.getElementById('use24HourFormat');
+    if (use24HourCheckbox) {
+      // Load saved preference
+      const saved24Hour = localStorage.getItem('ramzanUse24Hour') === '1';
+      use24HourCheckbox.checked = saved24Hour;
 
-    if (useCustomEl && customAddressEl){
-      useCustomEl.addEventListener('change', function(){
-        customAddressEl.parentElement.style.display = useCustomEl.checked ? 'block' : 'none';
+      // Add event listener
+      use24HourCheckbox.addEventListener('change', function() {
+        localStorage.setItem('ramzanUse24Hour', this.checked ? '1' : '0');
+        // Refresh timings display
+        if (countrySelect && citySelect && citySelect.value) {
+          const address = `${citySelect.options[citySelect.selectedIndex].textContent}, ${countrySelect.options[countrySelect.selectedIndex].textContent}`;
+          const opts = { address, method: methodSelect ? methodSelect.value : '3', timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+          updateTodayTimings(address, {sehriEl, iftarEl, countdownEl}, opts);
+        }
       });
     }
 

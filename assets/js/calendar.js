@@ -15,6 +15,32 @@ const advancedOptions = document.getElementById('advancedOptions');
 let lastParams = null;
 let lastData = null;
 
+// Global variable for download functionality
+window.lastCalendarData = null;
+
+// Time formatting function
+function formatTime(timeString, use24Hour = false) {
+    if (!timeString || timeString === '--') return timeString;
+
+    // Remove any parentheses and extra text
+    const cleanTime = timeString.replace(/\s*\(.*$/,'').trim();
+
+    // Check if it's already in HH:MM format
+    const timeMatch = cleanTime.match(/^(\d{1,2}):(\d{2})$/);
+    if (!timeMatch) return cleanTime;
+
+    const hours = parseInt(timeMatch[1]);
+    const minutes = timeMatch[2];
+
+    if (use24Hour) {
+        return `${hours.toString().padStart(2, '0')}:${minutes}`;
+    } else {
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+        return `${displayHours}:${minutes} ${period}`;
+    }
+}
+
 function buildLabels() {
     const countryLabel = countrySelect && countrySelect.selectedIndex >= 0 ? countrySelect.options[countrySelect.selectedIndex].textContent : '';
     const cityLabel = citySelect && citySelect.selectedIndex >= 0 ? citySelect.options[citySelect.selectedIndex].textContent : '';
@@ -24,7 +50,11 @@ function buildLabels() {
 async function refreshCalendar() {
     const country = countrySelect.value;
     const city = citySelect.value;
-    if (!country || !city) return;
+    if (!country || !city) {
+        // Show message when no city is selected
+        calendarContainer.innerHTML = '<div class="no-selection">Please select a country and city above to view the Ramzan calendar.</div>';
+        return;
+    }
 
     const { countryLabel, cityLabel } = buildLabels();
     const params = {
@@ -65,6 +95,13 @@ function renderData(data) {
         return;
     }
 
+    // Store data globally for download functionality
+    window.lastCalendarData = data;
+
+    // Check 24-hour format preference
+    const use24HourCheckbox = document.getElementById('use24HourFormat');
+    const use24Hour = use24HourCheckbox ? use24HourCheckbox.checked : false;
+
     // Desktop: table, Mobile: cards
     if (window.innerWidth >= 900) {
         const table = document.createElement('table');
@@ -75,7 +112,7 @@ function renderData(data) {
         const tbody = document.createElement('tbody');
         data.forEach(d => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${d.day}</td><td>${d.hijriDate}</td><td>${d.gregorianDate}</td><td>${d.sehri}</td><td>${d.iftar}</td>`;
+            tr.innerHTML = `<td>${d.day}</td><td>${d.hijriDate}</td><td>${d.gregorianDate}</td><td>${formatTime(d.sehri, use24Hour)}</td><td>${formatTime(d.iftar, use24Hour)}</td>`;
             tbody.appendChild(tr);
         });
         table.appendChild(tbody);
@@ -90,8 +127,8 @@ function renderData(data) {
                 <h3>Ramzan ${d.day}</h3>
                 <p><strong>Hijri:</strong> ${d.hijriDate}</p>
                 <p><strong>Gregorian:</strong> ${d.gregorianDate}</p>
-                <p><strong>Sehri End:</strong> ${d.sehri}</p>
-                <p><strong>Iftar:</strong> ${d.iftar}</p>
+                <p><strong>Sehri End:</strong> ${formatTime(d.sehri, use24Hour)}</p>
+                <p><strong>Iftar:</strong> ${formatTime(d.iftar, use24Hour)}</p>
             `;
             calendarContainer.appendChild(card);
         });
@@ -128,6 +165,7 @@ window.addEventListener('resize', () => {
 
 // initialize
 loadCountries();
+refreshCalendar(); // Show initial message
 
 function updateCustomAddressUI_calendar() {
     try {
@@ -141,3 +179,18 @@ function updateCustomAddressUI_calendar() {
 
 if (useCustomAddressCheckbox) useCustomAddressCheckbox.addEventListener('change', updateCustomAddressUI_calendar);
 try { updateCustomAddressUI_calendar(); } catch(e) {}
+
+// 24-hour format checkbox
+const use24HourCheckbox = document.getElementById('use24HourFormat');
+if (use24HourCheckbox) {
+    // Load saved preference
+    const saved24Hour = localStorage.getItem('ramzanUse24Hour') === '1';
+    use24HourCheckbox.checked = saved24Hour;
+
+    // Add event listener
+    use24HourCheckbox.addEventListener('change', function() {
+        localStorage.setItem('ramzanUse24Hour', this.checked ? '1' : '0');
+        // Refresh calendar display
+        if (lastData) renderData(lastData);
+    });
+}

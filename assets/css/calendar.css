@@ -1,39 +1,189 @@
+/* =====================================================
+   GLOBAL CONTAINER
+===================================================== */
+
 .calendar-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 15px;
+    max-width: 1400px;
+    margin: 0 auto;
     padding: 20px;
+    /* Remove overflow-x for desktop, keep for mobile */
 }
 
+/* Desktop: no horizontal scroll */
+@media (min-width: 900px) {
+    .calendar-container {
+        overflow-x: visible;
+    }
+}
+
+/* Mobile: keep horizontal scroll for table */
+@media (max-width: 899px) {
+    .calendar-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Mobile: 2 cards per row */
+@media (max-width: 899px) {
+    .calendar-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 15px;
+    }
+}
+
+/* =====================================================
+   DAY CARDS (MONTH VIEW)
+===================================================== */
+
 .day-card {
-    background: white;
-    border-radius: 8px;
+    background: #ffffff;
+    border-radius: 10px;
     padding: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
 .day-card h3 {
-    margin: 0;
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
     color: #0b3d2e;
 }
 
 .day-card p {
-    margin: 6px 0;
+    margin: 4px 0;
     font-size: 14px;
+    color: #333;
 }
+
+/* =====================================================
+   TIMINGS TABLE (DESKTOP STYLE ALWAYS)
+===================================================== */
 
 .timings-table {
     width: 100%;
+    /* Remove min-width for desktop responsiveness */
+    margin: 30px auto;
     border-collapse: collapse;
+    table-layout: auto;        /* Allow columns to adjust */
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.12);
 }
-.timings-table th, .timings-table td {
-    padding: 10px 12px;
-    border: 1px solid #e6e6e6;
-    text-align: left;
-    font-size: 14px;
-}
+
+/* =====================================================
+   TABLE HEADER
+===================================================== */
+
 .timings-table th {
-    background: linear-gradient(180deg,#0b3d2e,#0e4f3a);
-    color: #fff;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #0b3d2e, #146c52);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
 }
-.loading, .error { padding:20px; text-align:center; color:#333 }
+
+/* =====================================================
+   TABLE BODY
+===================================================== */
+
+.timings-table td {
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #222;
+    text-align: center;
+    white-space: nowrap;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+/* Zebra rows */
+.timings-table tr:nth-child(even) {
+    background-color: #f6f9f8;
+}
+
+/* Hover effect */
+.timings-table tr:hover {
+    background-color: #e9f3ef;
+}
+
+/* =====================================================
+   STATES
+===================================================== */
+
+.loading,
+.error {
+    padding: 20px;
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+}
+
+.no-selection {
+    padding: 40px 20px;
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+/* =====================================================
+   MOBILE HINT (only show on mobile)
+===================================================== */
+
+@media (max-width: 899px) {
+    .calendar-container::after {
+        content: "← Swipe left/right to view full table →";
+        display: block;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+        margin-top: 8px;
+    }
+}
+
+/* =====================================================
+   PRINT MODE
+===================================================== */
+
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .navbar,
+    .footer,
+    .actions,
+    .selectors,
+    .calendar-controls {
+        display: none !important;
+    }
+
+    .calendar-container {
+        overflow: visible;
+        max-width: none;
+        padding: 0;
+    }
+
+    .timings-table {
+        min-width: 100%;
+        width: 100%;
+        box-shadow: none;
+        border: 1px solid #000;
+        margin: 0;
+    }
+
+    .timings-table th {
+        background: #000 !important;
+        color: #fff !important;
+    }
+}
+
+
