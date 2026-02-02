@@ -111,6 +111,16 @@
       if (typeof loadCountries === 'function') await loadCountries();
     } catch (e){ console.warn('loadCountries failed', e); }
 
+    // helper to resolve timezone: prefer explicit input, otherwise country option dataset, otherwise UTC
+    function getTimezoneForCountry(){
+      if (timezoneInput && timezoneInput.value) return timezoneInput.value;
+      if (countrySelect && countrySelect.selectedIndex >= 0){
+        const opt = countrySelect.options[countrySelect.selectedIndex];
+        if (opt && opt.dataset && opt.dataset.timezone) return opt.dataset.timezone;
+      }
+      return 'UTC';
+    }
+
     // restore saved selection (storage.js)
     try {
       if (typeof loadSelection === 'function'){
@@ -127,6 +137,14 @@
       }
     } catch (e){ console.warn('restore selection failed', e); }
 
+    // If no previously saved country/city, attempt IP-based detection (approximate)
+    try {
+      const savedForGeo = (typeof loadSelection === 'function') ? loadSelection() : null;
+      if ((!savedForGeo || (!savedForGeo.country && !savedForGeo.city)) && typeof detectAndSelectCityByIP === 'function') {
+        detectAndSelectCityByIP();
+      }
+    } catch(e){ /* ignore geo detection errors */ }
+
     // wire change events (keep minimal and safe)
     if (citySelect) citySelect.addEventListener('change', async function(){
       const country = countrySelect ? countrySelect.value : '';
@@ -136,7 +154,8 @@
       const addressLabel = citySelect.options[citySelect.selectedIndex] && citySelect.options[citySelect.selectedIndex].textContent || city;
       const countryLabel = countrySelect.options[countrySelect.selectedIndex] && countrySelect.options[countrySelect.selectedIndex].textContent || country;
       const address = `${addressLabel}, ${countryLabel}`;
-      const opts = { address, method: methodSelect ? methodSelect.value : '3', timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+      const opts = { address, method: methodSelect ? methodSelect.value : '3', timezonestring: getTimezoneForCountry(), tune: tuneInput ? tuneInput.value : '' };
+      console.log('update timings with timezone', opts.timezonestring);
       await updateTodayTimings(address, {sehriEl, iftarEl, countdownEl}, opts);
     });
 
@@ -144,7 +163,8 @@
       if (typeof saveSelection === 'function') saveSelection(countrySelect ? countrySelect.value : '', citySelect ? citySelect.value : '');
       if (countrySelect && citySelect && citySelect.value) {
         const address = `${citySelect.options[citySelect.selectedIndex].textContent}, ${countrySelect.options[countrySelect.selectedIndex].textContent}`;
-        const opts = { address, method: methodSelect.value, timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+        const opts = { address, method: methodSelect.value, timezonestring: getTimezoneForCountry(), tune: tuneInput ? tuneInput.value : '' };
+        console.log('update timings (method change) timezone', opts.timezonestring);
         await updateTodayTimings(address, {sehriEl, iftarEl, countdownEl}, opts);
       }
     });
@@ -162,7 +182,8 @@
         // Refresh timings display
         if (countrySelect && citySelect && citySelect.value) {
           const address = `${citySelect.options[citySelect.selectedIndex].textContent}, ${countrySelect.options[countrySelect.selectedIndex].textContent}`;
-          const opts = { address, method: methodSelect ? methodSelect.value : '3', timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+      const opts = { address, method: methodSelect ? methodSelect.value : '3', timezonestring: getTimezoneForCountry(), tune: tuneInput ? tuneInput.value : '' };
+      console.log('update timings with timezone', opts.timezonestring);
           updateTodayTimings(address, {sehriEl, iftarEl, countdownEl}, opts);
         }
       });
@@ -175,7 +196,8 @@
       if (saved && saved.useCustom && saved.customAddress) addressToUse = saved.customAddress;
       else if (countrySelect && citySelect && countrySelect.value && citySelect.value) addressToUse = `${citySelect.options[citySelect.selectedIndex].textContent}, ${countrySelect.options[countrySelect.selectedIndex].textContent}`;
       if (addressToUse) {
-        const opts = { address: addressToUse, method: methodSelect ? methodSelect.value : '3', timezonestring: timezoneInput ? timezoneInput.value : 'UTC', tune: tuneInput ? tuneInput.value : '' };
+        const opts = { address: addressToUse, method: methodSelect ? methodSelect.value : '3', timezonestring: getTimezoneForCountry(), tune: tuneInput ? tuneInput.value : '' };
+        console.log('initial update timings timezone', opts.timezonestring);
         await updateTodayTimings(addressToUse, {sehriEl, iftarEl, countdownEl}, opts);
       }
     } catch (e){ /* ignore */ }

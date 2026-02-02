@@ -27,6 +27,8 @@ async function loadCountries() {
             const option = document.createElement('option');
             option.value = id;
             option.textContent = name;
+            // attach timezone if available (used for API timezonestring)
+            if (item && item.timezone) option.dataset.timezone = item.timezone;
             countrySelect.appendChild(option);
         });
 

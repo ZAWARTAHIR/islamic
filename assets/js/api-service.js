@@ -63,4 +63,19 @@ async function fetchTodayTimingsByAddress({address, method = '3', timezonestring
     return json.data; // contains timings, date, meta
 }
 
+// reverse geocode using Nominatim to produce a human-readable address
+async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+    const res = await fetch(url, { headers: { accept: 'application/json', 'User-Agent': 'ramzan-calendar/1.0' } });
+    if (!res.ok) throw new Error('Reverse geocode failed');
+    const json = await res.json();
+    // prefer city/town/village, fallback to county/state or display_name
+    const city = json.address && (json.address.city || json.address.town || json.address.village || json.address.county || json.address.state) || null;
+    const country = json.address && (json.address.country) || null;
+    const display = json.display_name || (city && country ? `${city}, ${country}` : null);
+    return { city, country, display };
+}
+
+window.reverseGeocode = reverseGeocode;
+
 window.fetchTodayTimingsByAddress = fetchTodayTimingsByAddress;

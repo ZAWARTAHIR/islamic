@@ -51,3 +51,15 @@ th {
     background: #e6f4ef;
     font-weight: bold;
 }
+
+/* Prayer timings rows – theme safe */
+.prayer-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    font-size: 1rem;
+}
+
+.prayer-row:not(:last-child) {
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
