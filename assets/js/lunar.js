@@ -178,9 +178,71 @@
       setInterval(update,1000); tzSelect.addEventListener('input', update); update();
 
       // prayer times
-      function calculatePrayerTimes(date,lat,lon){ const times = SunCalc.getTimes(date,lat,lon); return { fajr: times.dawn, dhuhr: times.solarNoon, asr: times.sunset, maghrib: times.sunset, isha: times.dusk }; }
-      function getCurrentPrayer(pt, now){ const prayers = [{name:'Fajr',time:pt.fajr},{name:'Dhuhr',time:pt.dhuhr},{name:'Asr',time:pt.asr},{name:'Maghrib',time:pt.maghrib},{name:'Isha',time:pt.isha}]; for(let i=0;i<prayers.length;i++){ const next = prayers[(i+1)%prayers.length]; if(now >= prayers[i].time && now < next.time) return prayers[i].name; } return 'Fajr'; }
-      function updatePrayerTimes(){ const now=new Date(); const pt = calculatePrayerTimes(now,21.4225,39.8262); const current = getCurrentPrayer(pt,now); const tz = tzSelect.value; if(prayerGrid) { prayerGrid.innerHTML=''; const arr = [{name:'Fajr',time:pt.fajr},{name:'Dhuhr',time:pt.dhuhr},{name:'Asr',time:pt.asr},{name:'Maghrib',time:pt.maghrib},{name:'Isha',time:pt.isha}]; arr.forEach(p=>{ const item = document.createElement('div'); item.className = `prayer-item ${p.name===current?'current':''}`; item.innerHTML = `<span class="prayer-name">${p.name}</span><span class="prayer-time">${formatDate(p.time,tz).split(' ')[1]||'--'}</span>`; prayerGrid.appendChild(item); }); }
+      function calculatePrayerTimes(date,lat,lon){
+        const times = SunCalc.getTimes(date,lat,lon);
+        // Use SunCalc-derived times as a best-effort baseline. We'll try to override Asr with Aladhan API when possible.
+        return {
+          fajr: times.dawn,
+          dhuhr: times.solarNoon,
+          // temporary placeholder; will attempt to replace with API-provided Asr
+          asr: times.sunset,
+          maghrib: times.sunset,
+          isha: times.dusk
+        };
+      }
+
+      function getCurrentPrayer(pt, now){
+        const prayers = [
+          {name:'Fajr',time:pt.fajr},
+          {name:'Dhuhr',time:pt.dhuhr},
+          {name:'Asr',time:pt.asr},
+          {name:'Maghrib',time:pt.maghrib},
+          {name:'Isha',time:pt.isha}
+        ];
+        for(let i=0;i<prayers.length;i++){
+          const next = prayers[(i+1)%prayers.length];
+          if(now >= prayers[i].time && now < next.time) return prayers[i].name;
+        }
+        return 'Fajr';
+      }
+
+      async function updatePrayerTimes(){
+        const now=new Date();
+        const lat = 21.4225; const lon = 39.8262; // default to Makkah for demo
+        let pt = calculatePrayerTimes(now, lat, lon);
+        const tz = tzSelect.value;
+
+        // Try to fetch authoritative prayer times from Aladhan and override Asr if available
+        try {
+          const url = `https://api.aladhan.com/v1/timings?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&method=3`;
+          const r = await fetch(url);
+          const j = await r.json();
+          if (j && j.data && j.data.timings && j.data.timings.Asr) {
+            const asrStr = j.data.timings.Asr.replace(/\s*\(.*$/,'').trim();
+            const m = asrStr.match(/(\d{1,2}):(\d{2})(?:\s*(AM|PM))?/i);
+            if (m) {
+              let hh = parseInt(m[1],10), mm = parseInt(m[2],10);
+              const ampm = (m[3]||'').toUpperCase();
+              if (ampm === 'PM' && hh < 12) hh += 12;
+              if (ampm === 'AM' && hh === 12) hh = 0;
+              pt.asr = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh, mm, 0);
+            }
+          }
+        } catch(e) {
+          // ignore fetch errors and keep SunCalc baseline
+        }
+
+        const current = getCurrentPrayer(pt,now);
+        if(prayerGrid) {
+          prayerGrid.innerHTML='';
+          const arr = [{name:'Fajr',time:pt.fajr},{name:'Dhuhr',time:pt.dhuhr},{name:'Asr',time:pt.asr},{name:'Maghrib',time:pt.maghrib},{name:'Isha',time:pt.isha}];
+          arr.forEach(p=>{
+            const item = document.createElement('div');
+            item.className = `prayer-item ${p.name===current?'current':''}`;
+            item.innerHTML = `<span class="prayer-name">${p.name}</span><span class="prayer-time">${formatDate(p.time,tz).split(' ')[1]||'--'}</span>`;
+            prayerGrid.appendChild(item);
+          });
+        }
       }
       setInterval(updatePrayerTimes, 60*1000); updatePrayerTimes();
 

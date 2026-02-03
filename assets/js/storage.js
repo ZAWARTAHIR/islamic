@@ -31,7 +31,9 @@ function saveSelection(country, city) {
         localStorage.setItem('ramzanShafaq', shafaqEl ? (shafaqEl.value || '') : '');
 
         const adv = document.getElementById('advancedToggle');
+        const asrEl = document.getElementById('asrMethod');
         localStorage.setItem('ramzanAdvanced', adv && adv.checked ? '1' : '');
+        localStorage.setItem('ramzanAsrMethod', asrEl ? (asrEl.value || '') : '');
     } catch (e) {
         console.warn('saveSelection failed', e);
     }
@@ -50,6 +52,7 @@ function loadSelection() {
         hijriYear: localStorage.getItem('ramzanHijriYear') || '',
         hijriMonth: localStorage.getItem('ramzanHijriMonth') || '',
         shafaq: localStorage.getItem('ramzanShafaq') || '',
+        asrMethod: localStorage.getItem('ramzanAsrMethod') || '',
         advanced: localStorage.getItem('ramzanAdvanced') === '1'
     };
 }

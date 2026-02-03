@@ -9,12 +9,13 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/theme.css">
-     <link rel="stylesheet" href="assets/css/lunar-global.css">
+    <link rel="stylesheet" href="assets/css/timings.css">
+    <link rel="stylesheet" href="assets/css/lunar-global.css">
 </head>
 <body>
 
 <nav class="navbar">
-    <button id="navToggle" class="nav-toggle">
+    <button id="navToggle" class="nav-toggle" type="button" aria-label="Toggle navigation menu">
         <span class="hamburger"></span>
     </button>
 
@@ -24,11 +25,14 @@
         <a href="timings.html" class="active">Timings</a>
         <a href="duas.html">Duas</a>
         <a href="zakat.html">Zakat</a>
+        <a href="lunar.html">Lunar</a>
         <a href="about.html">About</a>
     </div>
 
     <div class="nav-right">
         <a href="contact.html">Contact</a>
+        <!-- Theme toggle will be moved here by lunar.js if present -->
+        <div id="navbarThemePlaceholder"></div>
     </div>
 </nav>
 
@@ -56,29 +60,42 @@
                 <option value="">Select City</option>
             </select>
         </label>
+
+        <label>
+            Asr Method
+            <select id="asrMethod">
+                <option value="standard">Standard (most common)</option>
+                <option value="hanafi">Hanafi</option>
+            </select>
+        </label>
+        <div class="note" style="margin-top:6px;font-size:0.95rem">Hanafi is commonly used in South Asia and often matches local mosque timings. Change as needed.</div>
     </section>
 
     <!-- Prayer timings card (same layout style) -->
     <section class="card">
         <div id="prayerDate" class="muted" style="text-align:center;margin-bottom:12px"></div>
 
-        <div class="prayer-row">
-            <span>Fajr</span><span id="fajrTime">--</span>
-        </div>
-        <div class="prayer-row">
-            <span>Dhuhr</span><span id="dhuhrTime">--</span>
-        </div>
-        <div class="prayer-row">
-            <span>Asr</span><span id="asrTime">--</span>
-        </div>
-        <div class="prayer-row">
-            <span>Maghrib</span><span id="maghribTime">--</span>
-        </div>
-        <div class="prayer-row">
-            <span>Isha</span><span id="ishaTime">--</span>
+        <div class="table-section">
+            <table id="prayerTable" class="timings-table">
+                <thead>
+                    <tr>
+                        <th>Prayer</th>
+                        <th>Time (12-hour)</th>
+                        <th>Time (24-hour)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-prayer="Fajr"><td class="prayer-name">Fajr</td><td class="prayer-time-12" id="fajrTime12">--</td><td class="prayer-time-24" id="fajrTime24">--</td></tr>
+                    <tr data-prayer="Dhuhr"><td class="prayer-name">Dhuhr</td><td class="prayer-time-12" id="dhuhrTime12">--</td><td class="prayer-time-24" id="dhuhrTime24">--</td></tr>
+                    <tr data-prayer="Asr"><td class="prayer-name">Asr</td><td class="prayer-time-12" id="asrTime12">--</td><td class="prayer-time-24" id="asrTime24">--</td></tr>
+                    <tr data-prayer="Maghrib"><td class="prayer-name">Maghrib</td><td class="prayer-time-12" id="maghribTime12">--</td><td class="prayer-time-24" id="maghribTime24">--</td></tr>
+                    <tr data-prayer="Isha"><td class="prayer-name">Isha</td><td class="prayer-time-12" id="ishaTime12">--</td><td class="prayer-time-24" id="ishaTime24">--</td></tr>
+                </tbody>
+            </table>
         </div>
 
         <div id="timingsStatus" class="muted" style="margin-top:10px"></div>
+        <div id="comparisonNote" class="note" style="margin-top:8px; display:none"></div>
     </section>
 
 </main>
@@ -100,8 +117,11 @@
 </footer>
 
 <!-- Scripts -->
+<script src="assets/js/storage.js"></script>
 <script src="assets/js/country-city.js"></script>
 <script src="assets/js/timings.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/lunar.js"></script>
 
 </body>
 </html>

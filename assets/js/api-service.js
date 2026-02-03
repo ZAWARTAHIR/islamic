@@ -47,13 +47,15 @@ async function buildAndFetchHijriCalendar({hijriYear, hijriMonth, countryLabel, 
 
 window.buildAndFetchHijriCalendar = buildAndFetchHijriCalendar;
 
-async function fetchTodayTimingsByAddress({address, method = '3', timezonestring = 'UTC', tune = ''}) {
+async function fetchTodayTimingsByAddress({address, method = '3', timezonestring = 'UTC', tune = '', school = 0}) {
     if (!address) throw new Error('Missing address');
     const addr = encodeURIComponent(address);
     let url = `https://api.aladhan.com/v1/timingsByAddress?address=${addr}`;
     url += `&method=${encodeURIComponent(method)}`;
     if (timezonestring) url += `&timezonestring=${encodeURIComponent(timezonestring)}`;
     if (tune) url += `&tune=${encodeURIComponent(tune)}`;
+    // school parameter controls Asr (0 = Standard, 1 = Hanafi) when supported by API
+    if (typeof school !== 'undefined') url += `&school=${encodeURIComponent(school)}`;
 
     const res = await fetch(url, { headers: { accept: 'application/json' } });
     if (!res.ok) throw new Error(`API error ${res.status}`);

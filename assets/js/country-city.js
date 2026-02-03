@@ -78,7 +78,49 @@ async function loadCountries() {
                     citySelect.value = saved.city;
                     citySelect.dispatchEvent(new Event('change'));
                 }
+
+                // restore asr method if present
+                try{
+                    const asrEl = document.getElementById('asrMethod');
+                    if (asrEl && saved.asrMethod) { asrEl.value = saved.asrMethod; }
+                }catch(e){}
+
             }
+        }
+
+        // If the user has no saved selection, default to Pakistan / Karachi
+        try {
+            const current = (typeof loadSelection === 'function') ? loadSelection() : null;
+            if (!current || !current.country) {
+                const defaultCountry = 'pakistan';
+                const defaultCity = 'Karachi';
+                // set default country if available
+                const hasCountry = Array.from(countrySelect.options).some(o => o && o.value === defaultCountry);
+                if (hasCountry) {
+                    countrySelect.value = defaultCountry;
+                    await loadCities(defaultCountry);
+                    // set default city if available
+                    const hasCity = Array.from(citySelect.options).some(o => o && o.value === defaultCity);
+                    if (hasCity) {
+                        citySelect.value = defaultCity;
+                        citySelect.dispatchEvent(new Event('change'));
+                        // persist this default as the initial selection
+                        if (typeof saveSelection === 'function') saveSelection(defaultCountry, defaultCity);
+
+                        // If defaulting to Pakistan, set Asr method to Hanafi (common in region)
+                        try{
+                            const asrEl = document.getElementById('asrMethod');
+                            if (asrEl && (!loadSelection || !loadSelection().asrMethod)) {
+                                asrEl.value = 'hanafi';
+                                // persist choice
+                                if (typeof saveSelection === 'function') saveSelection(defaultCountry, defaultCity);
+                            }
+                        }catch(e){}
+                    }
+                }
+            }
+        } catch (e) {
+            // ignore errors from defaulting
         }
 
     } catch (e) {

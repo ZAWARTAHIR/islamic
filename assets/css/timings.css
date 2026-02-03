@@ -52,14 +52,19 @@ th {
     font-weight: bold;
 }
 
-/* Prayer timings rows – theme safe */
-.prayer-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 0;
-    font-size: 1rem;
-}
+/* Prayer timings table – three columns */
+.timings-table { width: 100%; max-width: 520px; margin: 0 auto 16px; border-collapse: collapse; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; }
+.timings-table thead th { background: #0b3d2e; color: #fff; font-weight: 700; padding: 10px 12px; text-align: left; }
+.timings-table tbody td { padding: 10px 12px; border-top: 1px solid #f0f0f0; }
+.timings-table .prayer-name { font-weight: 700; color: #0b3d2e; }
+.timings-table .prayer-time-12, .timings-table .prayer-time-24 { font-family: 'Roboto Mono', monospace; text-align: right; color: #333; }
 
-.prayer-row:not(:last-child) {
-    border-bottom: 1px solid rgba(0,0,0,0.08);
+/* Make the displayed date bold and prominent */
+#prayerDate, #homePrayerDate { font-weight: 700; font-size: 1.05rem; color: #0b3d2e; margin-bottom: 12px; text-align: center; }
+
+.timings-table tbody tr.current { background: rgba(255,224,102,0.12); border-left: 4px solid #ffe066; }
+
+@media (max-width: 480px) {
+    .timings-table thead th { font-size: 0.95rem; }
+    .timings-table tbody td { padding: 8px 10px; }
 }

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/theme.css">
+    <link rel="stylesheet" href="assets/css/timings.css">
     <link rel="stylesheet" href="assets/css/lunar-global.css">
 </head>
 <body>
@@ -63,6 +64,14 @@
                 <option value="7">Tehran</option>
             </select>
         </div>
+        <div class="field small">
+            <label for="asrMethod">Asr Method</label>
+            <select id="asrMethod">
+                <option value="standard">Standard (most common)</option>
+                <option value="hanafi">Hanafi</option>
+            </select>
+            <div class="note" style="margin-top:6px;font-size:0.95rem">Hanafi is commonly used in South Asia and often matches local mosque timings. Change as needed.</div>
+        </div>
 
         <!-- <div class="field small">
             <label><input type="checkbox" id="advancedToggle"> Advanced</label>
@@ -89,14 +98,33 @@
 
     <section class="today-timings card">
         <h2>Today's Timings</h2>
-        <div class="timing-row"><strong>Sehri:</strong> <span id="sehriTime">--</span></div>
-        <div class="timing-row"><strong>Iftar:</strong> <span id="iftarTime">--</span></div>
+
+        <!-- Date for today's timings -->
+        <div id="homePrayerDate" class="muted" style="text-align:center;margin-bottom:12px"></div>
+
+        <div class="table-section">
+            <table id="homeTimingsTable" class="timings-table">
+                <thead>
+                    <tr>
+                        <th>Prayer</th>
+                        <th>Time (12-hour)</th>
+                        <th>Time (24-hour)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-prayer="Sehri"><td class="prayer-name">Sehri</td><td class="prayer-time-12" id="sehriTime12">--</td><td class="prayer-time-24" id="sehriTime24">--</td></tr>
+                    <tr data-prayer="Iftar"><td class="prayer-name">Iftar</td><td class="prayer-time-12" id="iftarTime12">--</td><td class="prayer-time-24" id="iftarTime24">--</td></tr>
+                </tbody>
+            </table>
+        </div>
+
         <div class="timing-row"><strong>Countdown:</strong> <span id="countdown">--</span></div>
-        <div class="timing-row">
+
+        <!-- <div class="timing-row">
             <label style="font-weight: normal; font-size: 0.9em;">
                 <input type="checkbox" id="use24HourFormat" style="margin-right: 5px;"> Use 24-hour format
             </label>
-        </div>
+        </div> -->
         <p class="note">For full month calendar and printable schedules, open the <a href="calendar.html">Calendar</a> or <a href="timings.html">Timings</a> page.</p>
     </section>
 
