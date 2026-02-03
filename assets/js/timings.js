@@ -75,7 +75,8 @@ async function loadTodayPrayerTimings(country, city) {
                 if (calAsr && apiAsr && calAsr !== apiAsr) {
                     if (compEl) { compEl.style.display='block'; compEl.textContent = `Note: monthly calendar Asr = ${calAsr}, TimingsByCity Asr = ${apiAsr}. Try switching Asr method (Standard/Hanafi) if it doesn't match local mosque.`; }
                 } else {
-                    if (compEl) { compEl.style.display='block'; compEl.textContent = `Aladhan endpoints agree on Asr (${apiAsr || calAsr || 'N/A'}).`; }
+                    // If both endpoints agree, hide the comparison note to avoid unnecessary messages
+                    if (compEl) { compEl.style.display='none'; compEl.textContent = ''; }
                 }
             } catch(e) {
                 const compEl = document.getElementById('comparisonNote'); if (compEl) { compEl.style.display='block'; compEl.textContent = 'Calendar comparison failed.'; }

@@ -104,6 +104,60 @@ select::-webkit-selection { background: #ffe066; color: #222; }
 .lunar-enabled .tab-button.active { background: #ffe066; color: #222; }
 .lunar-enabled .tab-button:hover:not(.active) { background: #2a2f3a; }
 
+/* Dark-theme table overrides: keep tables readable in lunar dark mode */
+.lunar-enabled.dark table {
+  background: rgba(255,255,255,0.02) !important;
+  color: #e6eef8 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.lunar-enabled.dark .table-section table,
+.lunar-enabled.dark .today-timings .timings-table,
+.lunar-enabled.dark #homeTimingsTable {
+  background: rgba(255,255,255,0.02) !important;
+  color: #e6eef8 !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+.lunar-enabled.dark th, .lunar-enabled.dark td,
+.lunar-enabled.dark .table-section th, .lunar-enabled.dark .table-section td {
+  border-color: rgba(255,255,255,0.06) !important;
+  color: #e6eef8 !important;
+  background: transparent !important;
+}
+.lunar-enabled.dark table th {
+  background: rgba(255,255,255,0.04) !important;
+  color: #fff !important;
+}
+.lunar-enabled.dark .timings-table {
+  border-color: rgba(255,255,255,0.06) !important;
+  background: rgba(255,255,255,0.02) !important;
+}
+.lunar-enabled.dark .timings-table thead th {
+  background: rgba(0,0,0,0.5) !important;
+  color: #fff !important;
+}
+.lunar-enabled.dark .timings-table .prayer-name { color: #fff !important; }
+.lunar-enabled.dark .timings-table .prayer-time-12,
+.lunar-enabled.dark .timings-table .prayer-time-24 { color: #ddd !important; }
+.lunar-enabled.dark .today { background: rgba(255,255,255,0.04) !important; color: #fff !important; }
+.lunar-enabled.dark .timings-table tbody tr.current { background: rgba(255,224,102,0.14) !important; border-left-color:#ffd36a !important; }
+
+/* Calendar / day card dark-mode fixes: ensure every date/card follows dark palette */
+.lunar-enabled.dark .day-card { background: rgba(255,255,255,0.02) !important; color: #e6eef8 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important; }
+.lunar-enabled.dark .day-card h3 { color: #fff !important; }
+.lunar-enabled.dark .day-card p { color: #cfd6e8 !important; }
+.lunar-enabled.dark .calendar-container { background: transparent !important; }
+.lunar-enabled.dark .no-selection { background: rgba(255,255,255,0.02) !important; color: #cfd6e8 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.45) !important; }
+
+.lunar-enabled.dark .timings-table tr:nth-child(even) { background: rgba(255,255,255,0.02) !important; }
+.lunar-enabled.dark .timings-table tr:nth-child(odd) { background: transparent !important; }
+.lunar-enabled.dark .timings-table tr:hover { background: rgba(255,255,255,0.04) !important; }
+.lunar-enabled.dark .timings-table td { border-bottom-color: rgba(255,255,255,0.04) !important; }
+
+/* Date and muted text in dark mode */
+.lunar-enabled.dark #prayerDate, .lunar-enabled.dark #homePrayerDate { color: #e6eef8 !important; font-weight: 700 !important; }
+.lunar-enabled.dark .muted { color: #9aa3af !important; }
+.lunar-enabled.dark .note { color: #bfcfff !important; }
+
 /* Navbar layout and theme toggle sizing when lunar theme is active */
 .lunar-enabled .navbar { position: relative; display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap; padding: 0.6rem 1rem; width: 100%; z-index: 1000; box-sizing: border-box; }
 .lunar-enabled.dark .navbar { background: rgba(35,39,58,0.95); color: #fff; border-bottom: 1px solid rgba(255,255,255,0.03); }

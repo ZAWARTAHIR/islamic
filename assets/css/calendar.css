@@ -173,11 +173,12 @@
 
 .download-table td {
     text-align: center !important;
-    background-color: #ffffff !important;
+    background: transparent !important; /* inherit on-screen background (light/dark) */
+    color: inherit !important;
 }
 
 .download-table tr:nth-child(even) {
-    background-color: #f9f9f9 !important;
+    background: transparent !important;
 }
 
 

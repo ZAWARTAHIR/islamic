@@ -191,15 +191,11 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
             if (window.lastCalendarData) {
                 const table = document.createElement('table');
                 table.className = 'timings-table download-table';
-                table.style.cssText = `
-                    width: 100%;
-                    min-width: 600px;
-                    table-layout: fixed;
-                    margin: 0;
-                    border-collapse: collapse;
-                    background: #ffffff;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                `;
+                // Let CSS control appearance so the captured image matches the on-screen view (light/dark)
+                table.style.minWidth = '600px';
+                table.style.tableLayout = 'fixed';
+                table.style.margin = '0';
+                table.style.borderCollapse = 'collapse';
                 
                 const thead = document.createElement('thead');
                 thead.innerHTML = '<tr><th style="width: 10%">Day</th><th style="width: 25%">Hijri Date</th><th style="width: 25%">Gregorian Date</th><th style="width: 20%">Sehri End</th><th style="width: 20%">Iftar</th></tr>';
@@ -220,18 +216,51 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
 
     try {
         // Generate canvas from calendar container with settings optimized for full table capture
+        // Temporarily force light theme so downloads always render in light appearance
+        const prevTheme = localStorage.getItem('theme') || (document.body.classList.contains('dark') ? 'dark' : (document.body.classList.contains('light') ? 'light' : null));
+        const themeToggleEl = document.getElementById('themeToggle');
+        let forcedLight = false;
+        if (prevTheme !== 'light') {
+            // switch to light for capture
+            forcedLight = true;
+            localStorage.setItem('theme', 'light');
+            document.body.classList.remove('dark');
+            document.body.classList.add('light');
+            if (themeToggleEl) themeToggleEl.classList.add('light');
+            // allow styles to repaint
+            await new Promise(r => requestAnimationFrame(() => r()));
+        }
+        // ensure fonts are loaded for high-fidelity capture
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        const scale = Math.min(2, (window.devicePixelRatio || 1) * 1.5);
         const canvas = await html2canvas(calendarContainer, {
-            scale: 1.5,
+            scale,
             useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
+            allowTaint: false,
+            backgroundColor: null,
             width: calendarContainer.scrollWidth,
             height: calendarContainer.scrollHeight,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: calendarContainer.scrollWidth,
-            windowHeight: calendarContainer.scrollHeight
+            scrollX: -window.scrollX,
+            scrollY: -window.scrollY,
+            windowWidth: document.documentElement.clientWidth,
+            windowHeight: document.documentElement.clientHeight
         });
+        // restore previous theme (if we forced light)
+        if (forcedLight) {
+            if (prevTheme === 'dark') {
+                localStorage.setItem('theme', 'dark');
+                document.body.classList.add('dark');
+                document.body.classList.remove('light');
+                if (themeToggleEl) themeToggleEl.classList.remove('light');
+            } else {
+                // clear the theme preference to restore original state
+                document.body.classList.remove('dark');
+                document.body.classList.remove('light');
+                localStorage.removeItem('theme');
+                if (themeToggleEl) themeToggleEl.classList.remove('light');
+            }
+            await new Promise(r => requestAnimationFrame(() => r()));
+        }
 
         // Create PDF in A4 portrait for better calendar layout
         const { jsPDF } = window.jspdf;
