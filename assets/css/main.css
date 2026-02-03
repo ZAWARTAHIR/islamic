@@ -6,6 +6,7 @@
   --primary:var(--accent);
   --gold:#c49a3f;
   --radius:12px;
+  --hamburger:#fff;
 }
 
 /* Ensure theme-toggle ball is vertically centered in navbar and elsewhere */
@@ -87,8 +88,8 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;background:v
 .nav-toggle{display:none;background:none;border:0;padding:6px;margin-right:8px;cursor:pointer}
 .nav-toggle{background:transparent}
 .nav-toggle{border:0}
-.nav-toggle .hamburger{display:block;width:22px;height:2px;background:#fff;position:relative;border-radius:2px}
-.nav-toggle .hamburger::before,.nav-toggle .hamburger::after{content:'';display:block;position:absolute;left:0;width:100%;height:2px;background:#fff;border-radius:2px}
+.nav-toggle .hamburger{display:block;width:22px;height:2px;background:var(--hamburger,#fff);position:relative;border-radius:2px}
+.nav-toggle .hamburger::before,.nav-toggle .hamburger::after{content:'';display:block;position:absolute;left:0;width:100%;height:2px;background:var(--hamburger,#fff);border-radius:2px}
 .nav-toggle .hamburger::before{transform:translateY(-7px)}
 .nav-toggle .hamburger::after{transform:translateY(7px)}
 
@@ -104,6 +105,8 @@ body{margin:0;font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;background:v
   .desktop-only{display:none}
   .mobile-only{display:block}
   #navbarThemePlaceholder{display:block}
+  /* Ensure hamburger contrasts in light themes (site light or lunar light) */
+  .lunar-enabled.light .nav-toggle, body.light .nav-toggle { --hamburger: #111; }
 
   .nav-left{display:none;position:absolute;left:0;top:100%;right:0;background:var(--surface);flex-direction:column;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,0.12);z-index:1201}
   .navbar.open .nav-left{display:flex}

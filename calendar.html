@@ -173,51 +173,59 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
     // Check if we're on mobile and temporarily force desktop view for download
     const isMobile = window.innerWidth < 900;
     let originalContent = '';
-    
+    let captureElement = calendarContainer;
+
     if (isMobile) {
         // Store original mobile content
         originalContent = calendarContainer.innerHTML;
-        
-        // Force desktop table view for download
+
         const country = document.getElementById('countrySelect').value;
         const city = document.getElementById('citySelect').value;
-        
-        if (country && city) {
-            // Re-render as desktop table with proper styling for download
-            const use24HourCheckbox = document.getElementById('use24HourFormat');
-            const use24Hour = use24HourCheckbox ? use24HourCheckbox.checked : false;
-            
-            // Get the data from the last rendered data
-            if (window.lastCalendarData) {
-                const table = document.createElement('table');
-                table.className = 'timings-table download-table';
-                // Let CSS control appearance so the captured image matches the on-screen view (light/dark)
-                table.style.minWidth = '600px';
-                table.style.tableLayout = 'fixed';
-                table.style.margin = '0';
-                table.style.borderCollapse = 'collapse';
-                
-                const thead = document.createElement('thead');
-                thead.innerHTML = '<tr><th style="width: 10%">Day</th><th style="width: 25%">Hijri Date</th><th style="width: 25%">Gregorian Date</th><th style="width: 20%">Sehri End</th><th style="width: 20%">Iftar</th></tr>';
-                table.appendChild(thead);
-                
-                const tbody = document.createElement('tbody');
-                window.lastCalendarData.forEach(d => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${d.day}</td><td>${d.hijriDate}</td><td>${d.gregorianDate}</td><td>${formatTime(d.sehri, use24Hour)}</td><td>${formatTime(d.iftar, use24Hour)}</td>`;
-                    tbody.appendChild(tr);
-                });
-                table.appendChild(tbody);
-                calendarContainer.innerHTML = '';
-                calendarContainer.appendChild(table);
-            }
+        const use24HourCheckbox = document.getElementById('use24HourFormat');
+        const use24Hour = use24HourCheckbox ? use24HourCheckbox.checked : false;
+
+        if (country && city && window.lastCalendarData) {
+            // Create off-screen wrapper that mimics desktop layout so it renders full table
+            const tempWrap = document.createElement('div');
+            tempWrap.id = 'calendar-download-temp';
+            tempWrap.style.position = 'absolute';
+            tempWrap.style.left = '-9999px';
+            tempWrap.style.top = '0';
+            tempWrap.style.width = '1200px';
+            tempWrap.style.boxSizing = 'border-box';
+
+            const table = document.createElement('table');
+            table.className = 'timings-table download-table';
+            table.style.width = '100%';
+            table.style.tableLayout = 'fixed';
+            table.style.borderCollapse = 'collapse';
+
+            const thead = document.createElement('thead');
+            thead.innerHTML = '<tr><th style="width: 10%">Day</th><th style="width: 25%">Hijri Date</th><th style="width: 25%">Gregorian Date</th><th style="width: 20%">Sehri End</th><th style="width: 20%">Iftar</th></tr>';
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            window.lastCalendarData.forEach(d => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${d.day}</td><td>${d.hijriDate}</td><td>${d.gregorianDate}</td><td>${formatTime(d.sehri, use24Hour)}</td><td>${formatTime(d.iftar, use24Hour)}</td>`;
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+
+            tempWrap.appendChild(table);
+            document.body.appendChild(tempWrap);
+
+            // Capture the off-screen wrapper
+            captureElement = tempWrap;
+        } else {
+            captureElement = calendarContainer;
         }
     }
 
     try {
         // Generate canvas from calendar container with settings optimized for full table capture
         // Temporarily force light theme so downloads always render in light appearance
-        const prevTheme = localStorage.getItem('theme') || (document.body.classList.contains('dark') ? 'dark' : (document.body.classList.contains('light') ? 'light' : null));
+        const prevTheme = (function(){ try { return sessionStorage.getItem('ramzanTheme') || (document.body.classList.contains('dark') ? 'dark' : (document.body.classList.contains('light') ? 'light' : null)); } catch(e) { return (document.body.classList.contains('dark') ? 'dark' : (document.body.classList.contains('light') ? 'light' : null)); } })();
         const themeToggleEl = document.getElementById('themeToggle');
         let forcedLight = false;
         if (prevTheme !== 'light') {
@@ -233,17 +241,20 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
         // ensure fonts are loaded for high-fidelity capture
         if (document.fonts && document.fonts.ready) await document.fonts.ready;
         const scale = Math.min(2, (window.devicePixelRatio || 1) * 1.5);
-        const canvas = await html2canvas(calendarContainer, {
+        const target = captureElement || calendarContainer;
+        const cw = target.scrollWidth || target.offsetWidth;
+        const ch = target.scrollHeight || target.offsetHeight;
+        const canvas = await html2canvas(target, {
             scale,
             useCORS: true,
             allowTaint: false,
-            backgroundColor: null,
-            width: calendarContainer.scrollWidth,
-            height: calendarContainer.scrollHeight,
-            scrollX: -window.scrollX,
-            scrollY: -window.scrollY,
-            windowWidth: document.documentElement.clientWidth,
-            windowHeight: document.documentElement.clientHeight
+            backgroundColor: (forcedLight ? '#ffffff' : null),
+            width: cw,
+            height: ch,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: cw,
+            windowHeight: ch
         });
         // restore previous theme (if we forced light)
         if (forcedLight) {
@@ -266,8 +277,8 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4'); // portrait, millimeters, A4
         
-        // Use JPEG with quality compression for smaller file size
-        const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG with 85% quality
+        // Use PNG to preserve transparency and avoid black sections; PNG better preserves on-screen look
+        const imgData = canvas.toDataURL('image/png');
         const pdfWidth = pdf.internal.pageSize.getWidth();  // 210mm in portrait
         const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm in portrait
         
@@ -309,7 +320,10 @@ document.getElementById('downloadCalendar').addEventListener('click', async func
         console.error('Error generating PDF:', error);
         alert('Error generating calendar PDF. Please try again.');
     } finally {
-        // Restore original mobile content if it was changed
+        // Remove off-screen temp wrapper if it was used
+        const tmp = document.getElementById('calendar-download-temp');
+        if (tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp);
+        // Restore original mobile content if it was changed on-screen (unlikely with off-screen rendering)
         if (isMobile && originalContent) {
             calendarContainer.innerHTML = originalContent;
         }

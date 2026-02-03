@@ -47,7 +47,8 @@
   function setTheme(theme){
     document.body.classList.remove('light','dark');
     document.body.classList.add(theme);
-    localStorage.setItem('theme', theme);
+    // persist theme in sessionStorage so it stays across navigation in the same tab
+    try { sessionStorage.setItem('ramzanTheme', theme); } catch(e) { /* no-op */ }
     const toggle = document.getElementById('themeToggle');
     if(toggle) toggle.classList.toggle('light', theme === 'light');
     // remove old elements
@@ -135,9 +136,11 @@
   // Initialization on DOM ready
   function init(){
     createThemeSwitch();
-    const saved = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial = saved || (prefersDark ? 'dark' : 'light');
+    // Default behavior: if this load is a full reload, show light; otherwise restore theme from sessionStorage if present
+    const navEntry = (performance.getEntriesByType && performance.getEntriesByType('navigation') && performance.getEntriesByType('navigation')[0]) || null;
+    const navType = navEntry ? navEntry.type : (performance && performance.navigation && performance.navigation.type === 1 ? 'reload' : 'navigate');
+    const sessionTheme = (function(){ try { return sessionStorage.getItem('ramzanTheme'); } catch(e) { return null; } })();
+    const initial = (navType === 'reload') ? 'light' : (sessionTheme || 'light');
     // mark body so CSS stays scoped to pages where this script runs
     document.body.classList.add('lunar-enabled');
     setTheme(initial);
@@ -266,4 +269,11 @@
   }
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  // Re-apply session theme after navigation / bfcache restore so theme persists across pages
+  window.addEventListener('pageshow', function(e){
+    try{
+      const sessionTheme = (function(){ try { return sessionStorage.getItem('ramzanTheme'); } catch(e) { return null; } })();
+      if (sessionTheme) setTheme(sessionTheme);
+    }catch(err){ /* ignore */ }
+  });
 })();
