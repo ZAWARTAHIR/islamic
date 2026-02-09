@@ -32,12 +32,16 @@ async function buildAndFetchHijriCalendar({hijriYear, hijriMonth, countryLabel, 
         const hijri = item.date && item.date.hijri ? item.date.hijri : null;
         const greg = item.date && item.date.gregorian ? item.date.gregorian : null;
 
+        // normalize times
+        const sehriTime = (sehri + '').replace(/\s*\(.*$/,'').trim();
+        const iftarTime = (iftar + '').replace(/\s*\(.*$/,'').trim();
+
         return {
             day: (hijri && hijri.day) || (idx + 1),
             hijriDate: hijri ? hijri.date : (hijri && hijri.day) || '',
             gregorianDate: greg ? greg.date : '',
-            sehri: sehri.replace(/\s*\(.*$/,'').trim(),
-            iftar: iftar.replace(/\s*\(.*$/,'').trim(),
+            sehri: sehriTime,
+            iftar: iftarTime,
             raw: { timings, hijri, greg }
         };
     });

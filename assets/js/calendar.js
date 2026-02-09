@@ -57,6 +57,11 @@ async function refreshCalendar() {
     }
 
     const { countryLabel, cityLabel } = buildLabels();
+    // determine timezone: prefer explicit timezone input, else use selected country's dataset.timezone, else UTC
+    const selectedCountryOption = countrySelect && countrySelect.selectedIndex >= 0 ? countrySelect.options[countrySelect.selectedIndex] : null;
+    const countryTimezone = selectedCountryOption && selectedCountryOption.dataset && selectedCountryOption.dataset.timezone ? selectedCountryOption.dataset.timezone : '';
+    const tzValue = (timezoneInput && timezoneInput.value) ? timezoneInput.value : (countryTimezone || 'UTC');
+
     const params = {
         hijriYear: hijriYearInput ? hijriYearInput.value : '',
         hijriMonth: hijriMonthInput ? hijriMonthInput.value : '',
@@ -65,7 +70,7 @@ async function refreshCalendar() {
         method: methodSelect ? methodSelect.value : '3',
         shafaq: shafaqSelect ? shafaqSelect.value : 'general',
         tune: tuneInput ? tuneInput.value : '',
-        timezonestring: timezoneInput ? timezoneInput.value : 'UTC',
+        timezonestring: tzValue,
         calendarMethod: calendarMethodSelect ? calendarMethodSelect.value : 'UAQ',
         address: (useCustomAddressCheckbox && useCustomAddressCheckbox.checked && customAddressInput && customAddressInput.value) ? customAddressInput.value.trim() : ''
     };
