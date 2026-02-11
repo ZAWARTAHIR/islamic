@@ -14,6 +14,17 @@ async function loadCountries() {
         // support array of strings or array of {id,name}
         const countries = Array.isArray(raw) ? raw : [];
 
+        // Sort countries alphabetically by name (A-Z)
+        countries.sort((a, b) => {
+            let nameA = typeof a === 'string' 
+                ? a.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ')
+                : (a && a.name ? a.name : a.id);
+            let nameB = typeof b === 'string'
+                ? b.split('-').map(w=>w[0]?.toUpperCase()+w.slice(1)).join(' ')
+                : (b && b.name ? b.name : b.id);
+            return nameA.localeCompare(nameB);
+        });
+
         console.log('loadCountries: parsed countries count', countries.length);
         countries.forEach(item => {
             let id, name;
@@ -138,6 +149,17 @@ async function loadCities(countryId) {
 
         // support array or { cities: [...] }
         const list = Array.isArray(data) ? data : (data && data.cities ? data.cities : []);
+
+        // Sort cities alphabetically by name (A-Z)
+        list.sort((a, b) => {
+            let labelA = typeof a === 'string'
+                ? a.split(/[-_\s]/).map(w=>w[0]?w[0].toUpperCase()+w.slice(1):w).join(' ')
+                : (a && a.name ? a.name : a.id);
+            let labelB = typeof b === 'string'
+                ? b.split(/[-_\s]/).map(w=>w[0]?w[0].toUpperCase()+w.slice(1):w).join(' ')
+                : (b && b.name ? b.name : b.id);
+            return labelA.localeCompare(labelB);
+        });
 
         list.forEach(item => {
             let value, label;
