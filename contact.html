@@ -42,12 +42,15 @@
   </header>
 
   <section class="card">
-    <form>
-      <label>Name<input type="text" name="name"></label>
+    <form id="contactForm" data-whatsapp-number="923037065198">
+      <label>Name<input type="text" name="name" required></label>
       <label>Email<input type="email" name="email"></label>
-      <label>Message<textarea name="message"></textarea></label>
-      <button type="submit">Send</button>
+      <label>Message<textarea name="message" required></textarea></label>
+      <div style="text-align:center; margin-top:12px;">
+        <button type="submit" style="display:inline-block;">Send via WhatsApp</button>
+      </div>
     </form>
+    <!-- <p class="note">WhatsApp number set to <strong>923037065198</strong> (international, no +). Submitting the form will open WhatsApp to send the message to this number.</p> -->
   </section>
 
   <section class="card-grid">
@@ -67,21 +70,42 @@
 </main>
 
 <footer class="footer">
-  <div class="footer-inner">
-    <div class="footer-links">
-      <a href="index.html">Home</a>
-      <a href="calendar.html">Calendar</a>
-      <a href="timings.html">Timings</a>
-      <a href="duas.html">Duas</a>
-      <a href="zakat.html">Zakat</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+  <div class="footer-inner footer-grid">
+    <div class="footer-col footer-brand">
+      <p>Ramzan Calendar — accurate prayer and fasting times, quick resources and guidance during Ramadan.</p>
     </div>
-    <div class="footer-meta">
-      <div class="social"><a href="#">Twitter</a><a href="#">Facebook</a></div>
-      <div style="margin-top:6px"><a href="seo/sitemap.xml">Sitemap</a> · <a href="seo/robots.txt">Robots</a> · <a href="privacy.html">Privacy</a></div>
-      <div style="margin-top:8px">© 2026 Ramzan Calendar</div>
+
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul class="footer-links-list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="calendar.html">Calendar</a></li>
+        <li><a href="timings.html">Timings</a></li>
+        <li><a href="duas.html">Duas</a></li>
+      </ul>
     </div>
+
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul class="footer-links-list">
+        <li><a href="zakat.html">Zakat</a></li>
+        <li><a href="lunar.html">Lunar</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Follow</h4>
+      <div class="social">
+        <a href="#">Twitter</a>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+      </div>
+      <p class="small" style="margin-top:10px">Data sources: astronomical calculations and community contributions.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <small>© 2026 Ramzan Calendar · Built with care · <a href="https://github.com">Source</a></small>
   </div>
 </footer>
 
@@ -90,6 +114,31 @@
 <script src="assets/js/countdown.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/lunar.js"></script>
+
+<script>
+  (function(){
+    var form = document.getElementById('contactForm');
+    if (!form) return;
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var waNumber = form.getAttribute('data-whatsapp-number') || '';
+      if (!waNumber || waNumber === 'REPLACE_WITH_NUMBER'){
+        alert('Please set your WhatsApp number in the form data-whatsapp-number attribute.');
+        return;
+      }
+      var name = (form.elements['name'] && form.elements['name'].value) || '';
+      var email = (form.elements['email'] && form.elements['email'].value) || '';
+      var message = (form.elements['message'] && form.elements['message'].value) || '';
+      var text = '';
+      if (name) text += 'Name: ' + name + '%0A';
+      if (email) text += 'Email: ' + email + '%0A';
+      if (message) text += 'Message: ' + message + '%0A';
+      text += '%0A' + 'Sent from: ' + window.location.href;
+      var url = 'https://wa.me/' + encodeURIComponent(waNumber) + '?text=' + text;
+      window.open(url, '_blank');
+    });
+  })();
+</script>
 
 </body>
 </html>
