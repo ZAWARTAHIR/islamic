@@ -100,8 +100,33 @@ function renderData(data) {
         return;
     }
 
-    // Store data globally for download functionality
-    window.lastCalendarData = data;
+    // Renumber days starting from Hijri 01-09-1447 and Gregorian 19-02-2026
+    const updatedData = data.map((d, idx) => {
+        // Calculate Hijri date: 01-09-1447 + idx days
+        const hijriDay = idx + 1;
+        const hijriMonth = 9;
+        const hijriYear = 1447;
+        const hijriDate = `${String(hijriDay).padStart(2, '0')}-${String(hijriMonth).padStart(2, '0')}-${hijriYear}`;
+
+        // Calculate Gregorian date: 19-02-2026 + idx days
+        const startDate = new Date(2026, 1, 19); // February 19, 2026
+        const currentDate = new Date(startDate);
+        currentDate.setDate(currentDate.getDate() + idx);
+        const gregDay = String(currentDate.getDate()).padStart(2, '0');
+        const gregMonth = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const gregYear = currentDate.getFullYear();
+        const gregorianDate = `${gregDay}-${gregMonth}-${gregYear}`;
+
+        return {
+            ...d,
+            day: hijriDay,
+            hijriDate: hijriDate,
+            gregorianDate: gregorianDate
+        };
+    });
+
+    // Store updated data globally for download functionality
+    window.lastCalendarData = updatedData;
 
     // Check 24-hour format preference
     const use24HourCheckbox = document.getElementById('use24HourFormat');
@@ -115,7 +140,7 @@ function renderData(data) {
         thead.innerHTML = '<tr><th>Day</th><th>Hijri Date</th><th>Gregorian Date</th><th>Sehri End</th><th>Iftar</th></tr>';
         table.appendChild(thead);
         const tbody = document.createElement('tbody');
-        data.forEach(d => {
+        updatedData.forEach(d => {
             const tr = document.createElement('tr');
             tr.innerHTML = `<td>${d.day}</td><td>${d.hijriDate}</td><td>${d.gregorianDate}</td><td>${formatTime(d.sehri, use24Hour)}</td><td>${formatTime(d.iftar, use24Hour)}</td>`;
             tbody.appendChild(tr);
@@ -125,7 +150,7 @@ function renderData(data) {
         calendarContainer.appendChild(table);
     } else {
         calendarContainer.innerHTML = '';
-        data.forEach(d => {
+        updatedData.forEach(d => {
             const card = document.createElement('div');
             card.className = 'day-card';
             card.innerHTML = `
